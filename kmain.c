@@ -1,13 +1,12 @@
 #define VIDEO_BADDR 0xB8000
 #define VIDEO_WIDTH 80
 
-// i wonder why this does not work as a macro
-void outb(unsigned short port, unsigned int val)
-{
-	__asm__ volatile("outb %b0, %w1"
-			: : "a"(val), "Nd"(port)
-			: "memory");
-}
+#define outb(_port, _val) \
+{ unsigned int port = _port; \
+	unsigned short val = _val; \
+	__asm__ volatile("outb %b0, %w1" \
+			: : "a"(val), "Nd"(port) \
+			: "memory"); }
 
 void disable_cursor()
 {
