@@ -1,0 +1,10 @@
+--- build/tcc-0.9.27/tccelf.c.orig
++++ build/tcc-0.9.27/tccelf.c
+@@ -1359,6 +1359,7 @@
+ static void fill_local_got_entries(TCCState *s1)
+ {
+     ElfW_Rel *rel;
++    if (!s1->got->reloc) return;
+     for_each_elem(s1->got->reloc, 0, rel, ElfW_Rel) {
+ 	if (ELFW(R_TYPE)(rel->r_info) == R_RELATIVE) {
+ 	    int sym_index = ELFW(R_SYM) (rel->r_info);
