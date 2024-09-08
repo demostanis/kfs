@@ -4,7 +4,8 @@ ARCH = i386
 
 CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
 CFLAGS = -Wall -Werror -Wextra
-LDFLAGS = -nostdlib -Wl,-Ttext,0x100000
+LDFLAGS = -nostdlib -Tlinker.ld \
+		  -m elf_$(ARCH) --gc-sections
 
 AS = nasm
 ASFLAGS = -felf32
@@ -14,14 +15,10 @@ OBJS = kernel.o kmain.o
 all: build/tcc $(NAME) release
 
 $(NAME): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
-
-release: $(NAME).iso
-$(NAME).iso: $(NAME)
-	grub-mkrescue -o $@ $(NAME) rootfs
+	$(LD) $(LDFLAGS) -o $@ $^
 
 run: release
-	qemu-system-$(ARCH) -cdrom $(NAME).iso
+	qemu-system-$(ARCH) -enable-kvm -cdrom $(NAME).iso
 
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2
@@ -35,6 +32,24 @@ build/tcc-$(TCC_VERSION):
 	( cd build/tcc-$(TCC_VERSION); \
 		./configure --prefix=$@ && \
 		make -j$$(nproc) cross-$(ARCH) )
+
+GRUB_MODULES = iso9660 multiboot \
+			   normal part_acorn part_amiga part_apple \
+			   part_bsd part_dfly part_dvh part_gpt part_msdos \
+			   part_plan part_sun part_sunpc # part_* modules are
+											 # always loaded by GRUB,
+											 # despite being unneeded
+GRUB_EXCLUDED_FILES = boot/grub/x86_64-efi \
+					  boot/grub/i386-efi \
+					  System mach_kernel \
+					  efi efi.img
+release: $(NAME).iso
+$(NAME).iso: $(NAME)
+	grub-mkrescue \
+		--themes="" \
+		--install-modules "$(GRUB_MODULES)" \
+		-o $@ $(NAME) rootfs -- \
+		-rm_r $(GRUB_EXCLUDED_FILES)
 
 clean:
 	$(RM) $(OBJS)
