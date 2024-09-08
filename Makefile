@@ -62,4 +62,4 @@ clear:
 
 re: fclean all
 
-.PHONY: all
+.PHONY: all run build/tcc release clean fclean clear re
