@@ -10,7 +10,7 @@ LDFLAGS = -nostdlib -Tlinker.ld \
 AS = nasm
 ASFLAGS = -felf32
 
-OBJS = kernel.o kmain.o
+OBJS = kernel.o kmain.o video.o gdt.o lib.o
 
 all: build/tcc $(NAME) release
 

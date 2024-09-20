@@ -1,35 +1,29 @@
-#define VIDEO_BADDR 0xB8000
-#define VIDEO_WIDTH 80
+#include "gdt.h"
+#include "video.h"
 
-#define outb(_port, _val) \
-{ unsigned int port = _port; \
-	unsigned short val = _val; \
-	__asm__ volatile("outb %b0, %w1" \
-			: : "a"(val), "Nd"(port) \
-			: "memory"); }
-
-void disable_cursor()
+void print_addr(unsigned char *addr, int lines)
 {
-	outb(0x3D4, 0x0A);
-	outb(0x3D5, 0x20);
-}
-
-void printk(const char *s)
-{
-	static volatile char *video = (volatile char *)VIDEO_BADDR;
-
-	volatile char *line_begin = video;
-	while (*s)
+	while (lines-- >= 0)
 	{
-		*video++ = *s++;
-		*video++ = 0x1F;
+		printk("%x: %x %x %x %x", addr,
+				((unsigned char *)addr)[3],
+				((unsigned char *)addr)[2],
+				((unsigned char *)addr)[1],
+				((unsigned char *)addr)[0]
+				);
+		addr += 4;
 	}
-	video += (VIDEO_WIDTH*2)-(video-line_begin); // newline
 }
 
 void kmain()
 {
+	gdt_install();
+
+	__attribute__((unused)) char *s = "my address is in the stack";
+	__attribute__((unused)) int i = 42;
+	__attribute__((unused)) int d = 0xdeadbeef;
+
 	disable_cursor();
 
-	printk("42");
+	print_addr((unsigned char *)&d, 24);
 }
