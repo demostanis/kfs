@@ -28,7 +28,6 @@ build/tcc-$(TCC_VERSION):
 	mkdir -p build
 	curl -sLo build/$(TCC_ARCHIVE) $(TCC_SRC)
 	tar -C build -xf build/$(TCC_ARCHIVE)
-	patch -p0 <./tcc-segfault.patch
 	( cd build/tcc-$(TCC_VERSION); \
 		./configure --prefix=$@ && \
 		make -j$$(nproc) cross-$(ARCH) )
