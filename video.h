@@ -9,4 +9,4 @@
 #define VIDEO_WIDTH 80
 
 void disable_cursor();
-void printk(const char *s, ...);
+void __printkn(const char *s, int n);
