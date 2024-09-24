@@ -10,7 +10,7 @@ LDFLAGS = -nostdlib -Tlinker.ld \
 AS = nasm
 ASFLAGS = -felf32
 
-OBJS = kernel.o kmain.o video.o gdt.o lib.o
+OBJS = kernel.o kmain.o video.o gdt.o lib.o serial.o
 
 all: build/tcc $(NAME) release
 
@@ -18,7 +18,8 @@ $(NAME): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
 run: release
-	qemu-system-$(ARCH) -enable-kvm -cdrom $(NAME).iso
+	qemu-system-$(ARCH) -enable-kvm \
+		-serial stdio -cdrom $(NAME).iso
 
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2

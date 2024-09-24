@@ -14,6 +14,7 @@ void __printkn(const char *s, int n)
 	int i = 0;
 	while (*s && i < n)
 	{
+		write_serial(*s);
 		if (*s == '\n')
 		{
 			video += (VIDEO_WIDTH*2)-(video-line_begin);
