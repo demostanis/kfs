@@ -4,7 +4,7 @@
  * kernel data, kernel stack,
  * user code, user data &
  * user stack */
-#define nentries 7
+#define nentries 5
 struct gdt_entry gdt[nentries] __attribute__((section(".gdt")));
 struct gdt_ptr gp;
 
@@ -32,10 +32,8 @@ void gdt_install()
 	gdt_set_gate(null);
 	gdt_set_gate(kernel_code);
 	gdt_set_gate(kernel_data);
-	gdt_set_gate(kernel_stack);
 	gdt_set_gate(user_code);
 	gdt_set_gate(user_data);
-	gdt_set_gate(user_stack);
 
 	gdt_flush();
 }

@@ -39,7 +39,5 @@ void gdt_flush();
 // for a description of each bit
 #define kernel_code 0,0xFFFFFFFF,0b10011011,0b1100
 #define kernel_data 0,0xFFFFFFFF,0b10010011,0b1100
-#define kernel_stack 0,0xFFFFFFFF,0b10010011,0b1100
 #define user_code 0,0xFFFFFFFF,0b11111011,0b1100
 #define user_data 0,0xFFFFFFFF,0b11110011,0b1100
-#define user_stack 0,0xFFFFFFFF,0b11110011,0b1100
