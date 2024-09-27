@@ -16,15 +16,13 @@ void print_addr(unsigned char *addr, int lines)
 	}
 }
 
-void kmain()
+void kcommon()
 {
 	gdt_install();
-
 	disable_cursor();
+}
 
-	__attribute__((unused)) char *s = "my address is in the stack";
-	__attribute__((unused)) int i = 42;
-	__attribute__((unused)) int d = 0xdeadbeef;
-
-	print_addr((unsigned char *)s, 24);
+void kmain()
+{
+	print_addr((unsigned char *)0x800, 24); // GDT
 }

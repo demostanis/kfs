@@ -1,0 +1,37 @@
+#!/bin/sh
+
+tests_begun=0
+
+while true; do
+	if (( ! tests_begun )); then
+		read -r line || exit
+		if [[ "$line" == *begin\ tests* ]]; then
+			tests_begun=1
+			continue
+		fi
+	fi
+
+	if (( tests_begun )); then
+		read -r line1 || exit 1
+		if [ "$line1" = "end tests" ]; then break; fi
+		read -r line2 || exit 1
+
+		prefix=$(printf "%s\n" "$line2" | od -An -N1 -b)
+		if [ "$prefix" = " 002" ]; then
+			if [ "$line1" != "${line2:1}" ]; then
+				(
+					echo -e "\x1b[1;31m"TEST FAILED"\x1b[0m"
+					echo expected=
+					echo "$line1"
+					echo "$line1" | hexdump -C
+					echo
+					echo got=
+					echo "$line2"
+					echo "$line2" | hexdump -C
+				) >&2
+
+				exit 1
+			fi
+		fi
+	fi
+done

@@ -6,20 +6,42 @@ CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
 CFLAGS = -Wall -Werror -Wextra
 LDFLAGS = -nostdlib -Tlinker.ld \
 		  -m elf_$(ARCH) --gc-sections
+QEMU_ARGS =
 
 AS = nasm
 ASFLAGS = -felf32
 
-OBJS = kernel.o kmain.o video.o printk.o gdt.o lib.o serial.o
+OBJS = kernel.o video.o printk.o gdt.o lib.o serial.o kmain.o
 
 all: build/tcc $(NAME) release
+
+MAYBE_TEST = cat
+
+tests: CPPFLAGS+=-DRUNTESTS
+tests: ASFLAGS+=-DRUNTESTS
+tests: QEMU_ARGS+=-nographic
+tests: QEMU_ARGS+=-monitor none
+tests: MAYBE_TEST=./test
+tests: re run
 
 $(NAME): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
+%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $< -D__FILENAME__="$$(basename "$<" .c)"
+
+.ONESHELL:
+kmain.o: kmain.c
+	tests=$$(nm *.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
+	( echo 'void ktest(){'; \
+		echo "$$tests" | sed 's/.*/void &();&();/g'; \
+		echo '}' ) | \
+		cat $< - | $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -
+
 run: release
 	qemu-system-$(ARCH) -enable-kvm \
-		-serial stdio -cdrom $(NAME).iso
+		-serial stdio -cdrom $(NAME).iso \
+		$(QEMU_ARGS) | $(MAYBE_TEST)
 
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2

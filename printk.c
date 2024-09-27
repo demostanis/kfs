@@ -130,3 +130,25 @@ void printk(const char *s, ...)
 	va_end(lst);
 	putchar('\n');
 }
+
+#include "tests.h"
+
+TESTS()
+
+	printk("Hello, world!");
+	assert_serial("Hello, world!");
+
+	printk("Here's a randomly chosen number: %d", 4);
+	assert_serial("Here's a randomly chosen number: 4");
+
+	printk("Here are many numbers: %d %d %d %d", 12, 42, 71897, 0);
+	assert_serial("Here are many numbers: 12 42 71897 0");
+
+	char *s = "ABC\x4";
+	printk("Bytes: %4B", s);
+	assert_serial("Bytes: ABC.");
+
+	printk("Hex: %x%x%x%x", s[0], s[1], s[2], s[3]);
+	assert_serial("Hex: 0x410x420x430x4");
+
+ENDTESTS

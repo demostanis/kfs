@@ -7,10 +7,20 @@ align 4
 section .text
 global _start
 _start:
+	extern kcommon
+	call kcommon
+
+%ifdef RUNTESTS
+	extern ktest
+	call ktest
+
+	call shutdown
+%else
 	extern kmain
 	call kmain
 
 	hlt
+%endif
 
 global gdt_flush
 extern gp
@@ -24,4 +34,10 @@ gdt_flush:
 	mov ss, ax
 	jmp 0x8:flush
 flush:
+	ret
+
+shutdown:
+	mov dx, 0x604
+	mov ax, 0x2000
+	out dx, ax
 	ret
