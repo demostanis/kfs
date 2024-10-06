@@ -1,17 +1,9 @@
 #pragma once
 
-#include "types.h"
+#include "lib.h"
 
 // much information was taken from
 // http://www.osdever.net/bkerndev/Docs/gdt.htm
-
-/* we pack each member to make sure tcc does
- * not fill our structure with more data for
- * optimizations. this however seems unneeded,
- * but it's left out as a safety measure in
- * case that's just specific to my machine
- * ¯\_(ツ)_/¯ */
-#define pack __attribute__((packed))
 
 struct gdt_entry
 {

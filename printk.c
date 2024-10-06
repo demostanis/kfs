@@ -2,7 +2,7 @@
 
 void __printk(const char *s)
 {
-	__printkn(s, strlen(s));
+	__write(s, strlen(s));
 }
 
 void putchar(char c)
@@ -116,7 +116,7 @@ void printk(const char *s, ...)
 	{
 		char *f = strchr(s, '%');
 		if (f)
-			__printkn(s, f-s);
+			__write(s, f-s);
 		else
 			__printk(s);
 		if (f)

@@ -9,3 +9,4 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long
+#define usize u32

@@ -1,12 +1,17 @@
 #include "video.h"
 
+void clear_video()
+{
+	bzero((char *)VIDEO_BADDR, COLUMNS*LINES*2);
+}
+
 void disable_cursor()
 {
 	outb(0x3D4, 0x0A);
 	outb(0x3D5, 0x20);
 }
 
-void __printkn(const char *s, int n)
+void __write(const char *s, int n)
 {
 	static volatile char *video = (volatile char *)VIDEO_BADDR;
 	static volatile char *line_begin = (volatile char *)VIDEO_BADDR;

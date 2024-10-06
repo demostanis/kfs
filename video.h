@@ -8,5 +8,9 @@
 #define VIDEO_BADDR 0xB8000
 #define VIDEO_WIDTH 80
 
+#define COLUMNS 80
+#define LINES 25
+
 void disable_cursor();
-void __printkn(const char *s, int n);
+void clear_video();
+void __write(const char *s, int n);

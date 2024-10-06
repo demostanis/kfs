@@ -1,12 +1,30 @@
+; all constants taken from
+; https://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot_002eh.html
+%define MULTIBOOT_HEADER_MAGIC 0x1BADB002
+%define MULTIBOOT_PAGE_ALIGN 0x00000001
+%define MULTIBOOT_MEMORY_INFO 0x00000002
+%define MULTIBOOT_FLAGS (MULTIBOOT_MEMORY_INFO|MULTIBOOT_PAGE_ALIGN)
+
 section .multiboot
 align 4
-	dd 0x1BADB002  ; magic
-	dd 0           ; flags
-	dd -0x1BADB002 ; checksum
+	dd MULTIBOOT_HEADER_MAGIC
+	dd MULTIBOOT_FLAGS
+	dd -(MULTIBOOT_HEADER_MAGIC+MULTIBOOT_FLAGS)
+
+section .bss
+align 16
+       resb 16*1024 ; reserve 16KiB stack
+stack:
 
 section .text
 global _start
 _start:
+	; setup stack pointer
+	mov esp, stack
+
+	push ebx ; magic
+	push eax ; struct multiboot_info *
+
 	extern kcommon
 	call kcommon
 
@@ -36,6 +54,7 @@ gdt_flush:
 flush:
 	ret
 
+global shutdown
 shutdown:
 	mov dx, 0x604
 	mov ax, 0x2000

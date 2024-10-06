@@ -20,3 +20,16 @@ int strlen(const char *s)
 		i++;
 	return i;
 }
+
+void memset(void *buf, int c, usize n)
+{
+	usize i = 0;
+
+	while (i < n)
+		((char *)buf)[i++] = c;
+}
+
+void bzero(void *buf, usize n)
+{
+	memset(buf, 0, n);
+}
