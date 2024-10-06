@@ -26,8 +26,8 @@ while true; do
 					echo "$line1" | hexdump -C
 					echo
 					echo got=
-					echo "$line2"
-					echo "$line2" | hexdump -C
+					echo "${line2:1}"
+					echo "${line2:1}" | hexdump -C
 				) >&2
 
 				exit 1
