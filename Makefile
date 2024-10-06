@@ -31,6 +31,7 @@ $(NAME): $(OBJS)
 
 .ONESHELL:
 kmain.o: kmain.c
+	rm -f $@ # else *.o will match kmain.o
 	tests=$$(nm *.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
 	( echo 'void ktest(){'; \
 		echo "$$tests" | sed 's/.*/\
