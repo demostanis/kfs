@@ -4,7 +4,7 @@
 
 void print_addr(unsigned char *addr, int lines)
 {
-	while (lines-- >= 0)
+	while (lines-- > 0)
 	{
 		printk("%8x: %2x %2x %2x %2x |%4B|", addr,
 				((unsigned char *)addr)[3],
@@ -25,5 +25,5 @@ void kcommon()
 
 void kmain()
 {
-	print_addr((unsigned char *)0x800, 24); // GDT
+	print_addr((unsigned char *)0x800, 25); // GDT
 }
