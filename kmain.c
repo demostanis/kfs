@@ -1,5 +1,6 @@
 #include "gdt.h"
 #include "printk.h"
+#include "tests.h"
 
 void print_addr(unsigned char *addr, int lines)
 {

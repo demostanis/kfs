@@ -134,7 +134,7 @@ void printk(const char *s, ...)
 #include "tests.h"
 
 TESTS()
-
+{
 	printk("Hello, world!");
 	assert_serial("Hello, world!");
 
@@ -150,5 +150,4 @@ TESTS()
 
 	printk("Hex: %x%x%x%x", s[0], s[1], s[2], s[3]);
 	assert_serial("Hex: 0x410x420x430x4");
-
-ENDTESTS
+}

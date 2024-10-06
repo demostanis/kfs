@@ -15,13 +15,12 @@ OBJS = kernel.o video.o printk.o gdt.o lib.o serial.o kmain.o
 
 all: build/tcc $(NAME) release
 
-MAYBE_TEST = cat
-
+TEST =
 tests: CPPFLAGS+=-DRUNTESTS
 tests: ASFLAGS+=-DRUNTESTS
 tests: QEMU_ARGS+=-nographic
 tests: QEMU_ARGS+=-monitor none
-tests: MAYBE_TEST=./test
+tests: TEST=| ./test
 tests: re run
 
 $(NAME): $(OBJS)
@@ -34,14 +33,18 @@ $(NAME): $(OBJS)
 kmain.o: kmain.c
 	tests=$$(nm *.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
 	( echo 'void ktest(){'; \
-		echo "$$tests" | sed 's/.*/void &();&();/g'; \
+		echo "$$tests" | sed 's/.*/\
+			begin_test();\
+			void &(); &();\
+			end_test();\
+			/g'; \
 		echo '}' ) | \
 		cat $< - | $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -
 
 run: release
 	qemu-system-$(ARCH) -enable-kvm \
 		-serial stdio -cdrom $(NAME).iso \
-		$(QEMU_ARGS) | $(MAYBE_TEST)
+		$(QEMU_ARGS) $(TEST)
 
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2
