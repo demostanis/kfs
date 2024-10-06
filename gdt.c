@@ -8,7 +8,7 @@
 struct gdt_entry gdt[nentries] __attribute__((section(".gdt")));
 struct gdt_ptr gp;
 
-static void gdt_set_gate(u64 base, u64 limit, u8 access, u8 gran)
+static void gdt_set_gate(u64 base, u64 limit, u8 access, u8 flags)
 {
 	static int n = 0;
 
@@ -18,7 +18,7 @@ static void gdt_set_gate(u64 base, u64 limit, u8 access, u8 gran)
 
 	gdt[n].limit_low = limit & 0xFFFF;
 
-	gdt[n].granularity = ((limit >> 16) & 0xF) | (gran << 4);
+	gdt[n].granularity = ((limit >> 16) & 0xF) | (flags << 4);
 	gdt[n].access = access;
 
 	n++;
