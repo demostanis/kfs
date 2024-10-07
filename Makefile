@@ -3,6 +3,7 @@ NAME = kfs
 ARCH = i386
 
 CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
+LIBTCC = build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a
 CFLAGS = -Wall -Werror -Wextra
 LDFLAGS = -nostdlib -Tlinker.ld \
 		  -m elf_$(ARCH) --gc-sections
@@ -24,7 +25,7 @@ tests: TEST=| ./test
 tests: re run
 
 $(NAME): $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $(LDFLAGS) -o $@ $^ $(LIBTCC)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $< -D__FILENAME__="$$(basename "$<" .c)"
