@@ -112,11 +112,17 @@ int __printfmt(char *f, va_list *lst)
 			else
 				putnbrx_u32(va_arg(*lst, int), size);
 			break;
+		case 'p':
+			putnbrx_u32(va_arg(*lst, int), 8);
+			break;
 		case 's':
 			__printk(va_arg(*lst, char *));
 			break;
 		case 'B':
 			putbytespr(va_arg(*lst, char *), size);
+			break;
+		case '%':
+			putchar('%');
 			break;
 		case 'l':
 			longlong = 1;
