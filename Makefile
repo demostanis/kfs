@@ -12,7 +12,7 @@ QEMU_ARGS =
 AS = nasm
 ASFLAGS = -felf32
 
-OBJS = kernel.o video.o printk.o gdt.o lib.o serial.o kmain.o
+OBJS = kernel.o video.o printk.o gdt.o lib.o serial.o pmem.o kmain.o
 
 all: build/tcc $(NAME) release
 

@@ -24,4 +24,4 @@ void shutdown();
 	((usize)&(((st *)0)->m))
 
 #define len(t) \
-	(t/sizeof(*t))
+	(sizeof t/sizeof(*t))
