@@ -4,7 +4,7 @@ ARCH = i386
 
 CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
 LIBTCC = build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -Iinc
 LDFLAGS = -nostdlib -Tlinker.ld \
 		  -m elf_$(ARCH) --gc-sections
 QEMU_ARGS =
@@ -12,7 +12,11 @@ QEMU_ARGS =
 AS = nasm
 ASFLAGS = -felf32
 
-OBJS = kernel.o video.o printk.o gdt.o lib.o serial.o pmem.o kmain.o
+OBJS = $(addprefix o/,\
+	   kernel.o video.o printk.o\
+	   gdt.o lib.o serial.o\
+	   pmem.o kmain.o\
+	   )
 
 all: build/tcc $(NAME) release
 
@@ -21,19 +25,19 @@ tests: CPPFLAGS+=-DRUNTESTS
 tests: ASFLAGS+=-DRUNTESTS
 tests: QEMU_ARGS+=-nographic
 tests: QEMU_ARGS+=-monitor none
-tests: TEST=| ./test
+tests: TEST=| ./serial_examiner
 tests: re run
 
 $(NAME): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBTCC)
 
-%.o: %.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $< -D__FILENAME__="$$(basename "$<" .c)"
+o/%.o: %.c | o
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $< -D__FILENAME__=$(basename $<)
 
 .ONESHELL:
-kmain.o: kmain.c
+o/kmain.o: kmain.c | o
 	rm -f $@ # else *.o will match kmain.o
-	tests=$$(nm *.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
+	tests=$$(nm o/*.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
 	( echo 'void ktest(){'; \
 		echo "$$tests" | sed 's/.*/\
 			begin_test();\
@@ -42,6 +46,12 @@ kmain.o: kmain.c
 			/g'; \
 		echo '}' ) | \
 		cat $< - | $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -
+
+o/%.o: %.s | o
+	$(AS) $(ASFLAGS) -o $@ $<
+
+o:
+	mkdir -p o
 
 run: release
 	qemu-system-$(ARCH) -enable-kvm \
