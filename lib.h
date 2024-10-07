@@ -9,9 +9,6 @@ void bzero(void *buf, usize n);
 
 void shutdown();
 
-/* filled by kcommon */
-extern struct multiboot_info *multiboot_info;
-
 /* we pack each member to make sure tcc does
  * not fill our structure with more data for
  * optimizations. this however seems unneeded,
@@ -19,3 +16,12 @@ extern struct multiboot_info *multiboot_info;
  * case that's just specific to my machine
  * 😭 */
 #define pack __attribute__((packed))
+
+#define skip_bytes(st, bytes) \
+	(((void *)st)+bytes)
+
+#define offsetof(st, m) \
+	((usize)&(((st *)0)->m))
+
+#define len(t) \
+	(t/sizeof(*t))

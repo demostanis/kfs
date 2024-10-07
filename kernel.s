@@ -2,8 +2,7 @@
 ; https://www.gnu.org/software/grub/manual/multiboot/html_node/multiboot_002eh.html
 %define MULTIBOOT_HEADER_MAGIC 0x1BADB002
 %define MULTIBOOT_PAGE_ALIGN 0x00000001
-%define MULTIBOOT_MEMORY_INFO 0x00000002
-%define MULTIBOOT_FLAGS (MULTIBOOT_MEMORY_INFO|MULTIBOOT_PAGE_ALIGN)
+%define MULTIBOOT_FLAGS (MULTIBOOT_PAGE_ALIGN)
 
 section .multiboot
 align 4

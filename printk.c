@@ -36,52 +36,69 @@ void putbytespr(unsigned char *s, int size)
 	}
 }
 
-void putnbr(int n)
-{
-	if (n >= 0 && n < 10)
-		putchar(n % 10 + '0');
-	else
-	{
-		putnbr(n / 10);
-		putnbr(n % 10);
-	}
+#define putnbr_for_type(t) \
+void putnbr_##t(t n) \
+{ \
+	if (n < 0) \
+	{ \
+		putchar('-'); \
+		n = -n; \
+	} \
+	if (n >= 0 && n < 10) \
+		putchar(n % 10 + '0'); \
+	else \
+	{ \
+		putnbr_##t(n / 10); \
+		putnbr_##t(n % 10); \
+	} \
 }
+putnbr_for_type(i32)
+putnbr_for_type(i64)
+// TODO: unsigned?
 
-void __putnbrx_internal(int n)
-{
-	if (n >= 0 && n < 16)
-		putchar("0123456789abcdef"[n % 16]);
-	else
-	{
-		__putnbrx_internal(n / 16);
-		__putnbrx_internal(n % 16);
-	}
+#define putnbrx_for_t(t) \
+void __putnbrx_internal_##t(t n) \
+{ \
+	if (n >= 0 && n < 16) \
+		putchar("0123456789abcdef"[n % 16]); \
+	else \
+	{ \
+		__putnbrx_internal_##t(n / 16); \
+		__putnbrx_internal_##t(n % 16); \
+	} \
+} \
+ \
+void putnbrx_##t(t n, int size) \
+{ \
+	__printk("0x"); \
+ \
+	int i = n, j = 0; \
+	while (i /= 16) \
+		++j; \
+	int pad = size - j; \
+	while (pad-- > 1) \
+		__printk("0"); \
+ \
+	__putnbrx_internal_##t(n); \
 }
-
-void putnbrx(int n, int size)
-{
-	__printk("0x");
-
-	int i = n, j = 0;
-	while (i /= 16)
-		++j;
-	int pad = size - j;
-	while (pad-- > 1)
-		__printk("0");
-
-	__putnbrx_internal(n);
-}
+putnbrx_for_t(u32)
+putnbrx_for_t(u64)
+// TODO: unsigned?
 
 int __printfmt(char *f, va_list *lst)
 {
 	static int size = 0;
+	static int longlong = 0;
 
 	int inc = 1;
 	switch (*f)
 	{
 		case 'd':
 		case 'i':
-			putnbr(va_arg(*lst, int));
+			if (longlong)
+				putnbr_i64(va_arg(*lst, long long));
+			else
+				putnbr_i32(va_arg(*lst, int));
 			break;
 		case 'c':
 			putchar(va_arg(*lst, char));
@@ -90,13 +107,21 @@ int __printfmt(char *f, va_list *lst)
 			putcharpr(va_arg(*lst, char));
 			break;
 		case 'x':
-			putnbrx(va_arg(*lst, int), size);
+			if (longlong)
+				putnbrx_u64(va_arg(*lst, long long), size);
+			else
+				putnbrx_u32(va_arg(*lst, int), size);
 			break;
 		case 's':
 			__printk(va_arg(*lst, char *));
 			break;
 		case 'B':
 			putbytespr(va_arg(*lst, char *), size);
+			break;
+		case 'l':
+			longlong = 1;
+			inc += __printfmt(f+1, lst);
+			longlong = 0;
 			break;
 		case '0' ... '9':
 			size = *f - '0';
@@ -129,6 +154,13 @@ void printk(const char *s, ...)
 	}
 	va_end(lst);
 	putchar('\n');
+}
+
+__attribute__((noreturn)) void panic(char *msg)
+{
+	printk("panic!");
+	printk(msg);
+	shutdown();
 }
 
 #include "tests.h"
