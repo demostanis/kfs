@@ -37,6 +37,10 @@ void kcommon(int magic, struct multiboot_info *info)
 	disable_cursor();
 }
 
+/* populated by the linker */
+extern void *kernel_end;
+#define kernel_begin 0x100000
+
 void kmain()
 {
 	// print_addr((unsigned char *)0x800, LINES); // GDT
@@ -45,7 +49,7 @@ void kmain()
 			mboot_info->mmap_addr,
 			sizeof(struct mmap_entry));
 
-	int i = 0;
+	usize i = 0;
 	while (i < mboot_info->mmap_length)
 	{
 		struct mmap_entry *entry = (struct mmap_entry *)
@@ -59,4 +63,7 @@ void kmain()
 		}
 		i += sizeof(struct mmap_entry);
 	}
+
+	printk("kernel memory=%x length=%x",
+			kernel_begin, (u32)&kernel_end-kernel_begin);
 }
