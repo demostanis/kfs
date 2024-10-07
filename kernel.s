@@ -18,24 +18,24 @@ stack:
 section .text
 global _start
 _start:
+	; kmain.c
+	extern kcommon
+	extern ktest
+	extern kmain
+
 	; setup stack pointer
 	mov esp, stack
 
 	push ebx ; magic
 	push eax ; struct multiboot_info *
 
-	extern kcommon
 	call kcommon
 
 %ifdef RUNTESTS
-	extern ktest
 	call ktest
-
 	call shutdown
 %else
-	extern kmain
 	call kmain
-
 	hlt
 %endif
 
