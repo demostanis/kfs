@@ -1,12 +1,12 @@
 #pragma once
 
-#define i8 char
-#define i16 short
-#define i32 int
-#define i64 long long
+typedef char i8;
+typedef short i16;
+typedef int i32;
+typedef long long i64;
 
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define usize u32
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
+typedef u32 usize;
