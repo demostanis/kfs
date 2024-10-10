@@ -36,6 +36,31 @@ void putbytespr(unsigned char *s, int size)
 	}
 }
 
+void __putbin_internal(unsigned int n)
+{
+	if (n == 0 || n == 1)
+		putchar(n % 2 + '0');
+	else
+	{
+		__putbin_internal(n / 2);
+		__putbin_internal(n % 2);
+	}
+}
+
+void putbin(unsigned int n, int size)
+{
+	__printk("0b");
+
+	int i = n, j = 0;
+	while (i /= 2)
+		++j;
+	int pad = size - j;
+	while (pad-- > 1)
+		__printk("0");
+
+	__putbin_internal(n);
+}
+
 #define putnbr_for_type(t) \
 void putnbr_##t(t n) \
 { \
@@ -118,6 +143,9 @@ int __printfmt(char *f, va_list *lst)
 		case 's':
 			__printk(va_arg(*lst, char *));
 			break;
+		case 'b':
+			putbin(va_arg(*lst, int), size);
+			break;
 		case 'B':
 			putbytespr(va_arg(*lst, char *), size);
 			break;
@@ -130,7 +158,7 @@ int __printfmt(char *f, va_list *lst)
 			longlong = 0;
 			break;
 		case '0' ... '9':
-			size = *f - '0';
+			size = size * 10 + *f - '0';
 			inc += __printfmt(f+1, lst);
 			size = 0;
 			break;
