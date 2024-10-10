@@ -4,6 +4,7 @@
 #include "printk.h"
 #include "multiboot.h"
 #include "pmem.h"
+#include "vmem.h"
 #include "tests.h"
 
 void print_addr(unsigned char *addr, int lines)
@@ -64,13 +65,10 @@ void kmain()
 		i += sizeof(struct mmap_entry);
 	}
 
-	u32 kernel_length = (u32)&kernel_end-kernel_begin;
-	bitmap_deinit_region(kernel_begin, kernel_length);
+	bitmap_deinit_region(kernel_begin, (u32)kernel_length);
+	bitmap_deinit_region(0, 0x1000000);
 
 	pmem_info();
 
-	printk("allocated page addr: %p", pmem_alloc_page());
-	printk("allocated page addr: %p", pmem_alloc_page());
-
-	pmem_info();
+	init_page_directory();
 }

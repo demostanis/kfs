@@ -20,3 +20,17 @@ shutdown:
 	mov ax, 0x2000
 	out dx, ax
 	jmp shutdown ; sometimes it needs to be done multiple times...
+
+global load_page_directory
+load_page_directory:
+	mov cr3, eax
+	ret
+
+global enable_paging
+enable_paging:
+	mov eax, cr0
+	xor ebx, ebx
+	shl ebx, 35
+	or eax, ebx
+	mov cr0, eax
+	ret
