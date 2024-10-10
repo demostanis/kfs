@@ -4,6 +4,7 @@
 #include "printk.h"
 #include "multiboot.h"
 #include "pmem.h"
+#include "vmem.h"
 #include "tests.h"
 
 void print_addr(unsigned char *addr, int lines)
@@ -38,39 +39,10 @@ void kcommon(int magic, struct multiboot_info *info)
 	disable_cursor();
 }
 
-/* populated by the linker */
-extern void *kernel_end;
-#define kernel_begin 0x100000
-
 void kmain()
 {
-	// print_addr((unsigned char *)0x800, LINES); // GDT
-	printk("mmap_length=%d mmap_addr=%x",
-			mboot_info->mmap_length,
-			mboot_info->mmap_addr);
+	init_pmem_regions();
+	init_page_directory();
 
-	usize i = 0;
-	while (i < mboot_info->mmap_length)
-	{
-		struct mmap_entry *entry = (struct mmap_entry *)
-			(mboot_info->mmap_addr + i);
-		if (entry->type == 1 /* unused */)
-		{
-			printk("base_addr=%lx length=%lx",
-					entry->base_addr,
-					entry->length);
-			bitmap_init_region(entry->base_addr, entry->length);
-		}
-		i += sizeof(struct mmap_entry);
-	}
-
-	u32 kernel_length = (u32)&kernel_end-kernel_begin;
-	bitmap_deinit_region(kernel_begin, kernel_length);
-
-	pmem_info();
-
-	printk("allocated page addr: %p", pmem_alloc_page());
-	printk("allocated page addr: %p", pmem_alloc_page());
-
-	pmem_info();
+	printk("Hello, world!");
 }

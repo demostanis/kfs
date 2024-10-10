@@ -4,6 +4,11 @@
 %define MULTIBOOT_PAGE_ALIGN 0x00000001
 %define MULTIBOOT_FLAGS (MULTIBOOT_PAGE_ALIGN)
 
+%macro export 1
+	global %1 ; func
+	%1
+%endmacro
+
 section .multiboot
 align 4
 	dd MULTIBOOT_HEADER_MAGIC
@@ -16,8 +21,7 @@ align 16
 stack:
 
 section .text
-global _start
-_start:
+export _start:
 	; kmain.c
 	extern kcommon
 	extern ktest

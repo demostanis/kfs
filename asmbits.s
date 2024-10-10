@@ -1,5 +1,4 @@
-global gdt_flush
-gdt_flush:
+export gdt_flush:
 	extern gp ; gdt.c
 
 	lgdt [gp]
@@ -9,14 +8,23 @@ gdt_flush:
 	mov fs, ax
 	mov gs, ax
 	mov ss, ax
-	jmp 0x8:flush
-flush:
+	jmp 0x8:.flush
+.flush:
 	ret
 
-global shutdown
-shutdown:
+export shutdown:
 	; only works on QEMU
 	mov dx, 0x604
 	mov ax, 0x2000
 	out dx, ax
 	jmp shutdown ; sometimes it needs to be done multiple times...
+
+export load_page_directory:
+	mov cr3, eax
+	ret
+
+export enable_paging:
+	mov eax, cr0
+	or eax, 0x80000000
+	mov cr0, eax
+	ret

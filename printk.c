@@ -52,7 +52,7 @@ void putbin(unsigned int n, int size)
 	__printk("0b");
 
 	int i = n, j = 0;
-	while (i /= 2)
+	while (i >>= 1)
 		++j;
 	int pad = size - j;
 	while (pad-- > 1)
@@ -61,50 +61,50 @@ void putbin(unsigned int n, int size)
 	__putbin_internal(n);
 }
 
-#define putnbr_for_type(t) \
-void putnbr_##t(t n) \
-{ \
-	if (n < 0) \
-	{ \
-		putchar('-'); \
-		n = -n; \
-	} \
-	if (n >= 0 && n < 10) \
+#define putnbr_for_type(t)     \
+void putnbr_##t(t n)           \
+{                              \
+	if (n < 0)                 \
+	{                          \
+		putchar('-');          \
+		n = -n;                \
+	}                          \
+	if (n >= 0 && n < 10)      \
 		putchar(n % 10 + '0'); \
-	else \
-	{ \
-		putnbr_##t(n / 10); \
-		putnbr_##t(n % 10); \
-	} \
+	else                       \
+	{                          \
+		putnbr_##t(n / 10);    \
+		putnbr_##t(n % 10);    \
+	}                          \
 }
 putnbr_for_type(i32)
 putnbr_for_type(i64)
 // TODO: unsigned?
 
-#define putnbrx_for_t(t) \
-void __putnbrx_internal_##t(t n) \
-{ \
-	if (n >= 0 && n < 16) \
+#define putnbrx_for_t(t)                     \
+void __putnbrx_internal_##t(t n)             \
+{                                            \
+	if (n >= 0 && n < 16)                    \
 		putchar("0123456789abcdef"[n % 16]); \
-	else \
-	{ \
-		__putnbrx_internal_##t(n / 16); \
-		__putnbrx_internal_##t(n % 16); \
-	} \
-} \
- \
-void putnbrx_##t(t n, int size) \
-{ \
-	__printk("0x"); \
- \
-	int i = n, j = 0; \
-	while (i /= 16) \
-		++j; \
-	int pad = size - j; \
-	while (pad-- > 1) \
-		__printk("0"); \
- \
-	__putnbrx_internal_##t(n); \
+	else                                     \
+	{                                        \
+		__putnbrx_internal_##t(n / 16);      \
+		__putnbrx_internal_##t(n % 16);      \
+	}                                        \
+}                                            \
+                                             \
+void putnbrx_##t(t n, int size)              \
+{                                            \
+	__printk("0x");                          \
+                                             \
+	int i = n, j = 0;                        \
+	while (i /= 16)                          \
+		++j;                                 \
+	int pad = size - j;                      \
+	while (pad-- > 1)                        \
+		__printk("0");                       \
+                                             \
+	__putnbrx_internal_##t(n);               \
 }
 putnbrx_for_t(u32)
 putnbrx_for_t(u64)

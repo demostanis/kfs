@@ -89,6 +89,30 @@ void *pmem_free_page(void *addr)
 	bitmap_set_unused(page);
 }
 
+extern struct multiboot_info *mboot_info;
+
+/* populated by the linker */
+extern void *kernel_end;
+#define kernel_begin 0x100000
+
+void init_pmem_regions()
+{
+	usize i = 0;
+	while (i < mboot_info->mmap_length)
+	{
+		struct mmap_entry *entry = (struct mmap_entry *)
+			(mboot_info->mmap_addr + i);
+
+		if (entry->type == 1 /* unused */)
+			bitmap_init_region(entry->base_addr, entry->length);
+
+		i += sizeof(struct mmap_entry);
+	}
+
+	bitmap_deinit_region(kernel_begin, (u32)kernel_length);
+	bitmap_deinit_region(0, 0x1000000);
+}
+
 void pmem_info()
 {
 	printk("free blocks: %d", free_blocks);

@@ -15,7 +15,7 @@ ASFLAGS = -felf32
 OBJS = $(addprefix o/,\
 	   kernel.o video.o printk.o\
 	   gdt.o lib.o serial.o\
-	   pmem.o kmain.o\
+	   pmem.o vmem.o kmain.o\
 	   )
 
 all: build/tcc $(NAME) release
