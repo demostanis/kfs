@@ -4,7 +4,7 @@ ARCH = i386
 
 CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
 LIBTCC = build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a
-CFLAGS = -Wall -Werror -Wextra -Iinc
+CFLAGS = -Wall -Werror -Wextra -Iinc -g
 LDFLAGS = -nostdlib -Tlinker.ld \
 		  -m elf_$(ARCH) --gc-sections
 QEMU_ARGS =
@@ -67,6 +67,7 @@ build/tcc-$(TCC_VERSION):
 	curl -sLo build/$(TCC_ARCHIVE) $(TCC_SRC)
 	tar -C build -xf build/$(TCC_ARCHIVE)
 	( cd build/tcc-$(TCC_VERSION); \
+		patch -p0 < ../../tcc-generate-proper-debug-symbols.patch && \
 		./configure --prefix=$@ && \
 		make -j$$(nproc) cross-$(ARCH) )
 
@@ -98,5 +99,11 @@ clear:
 	$(RM) -r build
 
 re: fclean all
+
+run_gdb: QEMU_ARGS+=-S -s
+run_gdb: run
+
+gdb:
+	gdb -x .gdb.script
 
 .PHONY: all run build/tcc release clean fclean clear re
