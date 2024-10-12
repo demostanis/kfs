@@ -1,11 +1,15 @@
 #pragma once
 
 #include "types.h"
+#include "printk.h"
 
 char *strchr(const char *s, char c);
 int strlen(const char *s);
 void memset(void *buf, int c, usize n);
 void bzero(void *buf, usize n);
+
+__attribute__((noreturn)) void panic(char *msg);
+void assert(int cond, char *msg);
 
 void shutdown();
 

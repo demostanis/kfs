@@ -33,3 +33,18 @@ void bzero(void *buf, usize n)
 {
 	memset(buf, 0, n);
 }
+
+__attribute__((noreturn)) void panic(char *msg)
+{
+	printk("panic!");
+	printk(msg);
+	shutdown();
+}
+
+void assert(int cond, char *msg)
+{
+#ifdef ASSERTIONS
+	if (!cond)
+		panic(msg);
+#endif
+}

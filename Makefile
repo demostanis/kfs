@@ -106,4 +106,4 @@ run_gdb: run
 gdb:
 	gdb -x .gdb.script
 
-.PHONY: all run build/tcc release clean fclean clear re
+.PHONY: all run tests build/tcc release clean fclean clear re run_gdb gdb

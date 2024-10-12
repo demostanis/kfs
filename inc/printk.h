@@ -12,4 +12,3 @@ void putcharpr(char c);
 void putstrpr(char c);
 
 void printk(const char *s, ...);
-__attribute__((noreturn)) void panic(char *msg);

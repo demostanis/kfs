@@ -190,13 +190,6 @@ void printk(const char *s, ...)
 	putchar('\n');
 }
 
-__attribute__((noreturn)) void panic(char *msg)
-{
-	printk("panic!");
-	printk(msg);
-	shutdown();
-}
-
 #include "tests.h"
 
 TESTS()
