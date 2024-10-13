@@ -18,5 +18,5 @@ void pmem_info();
 
 /* populated by the linker */
 extern void *kernel_end;
-#define kernel_begin 0x100000
-#define kernel_length &kernel_end-kernel_begin
+extern void *kernel_begin;
+#define kernel_length ((u32)&kernel_end-(u32)&kernel_begin)

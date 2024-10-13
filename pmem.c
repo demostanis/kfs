@@ -93,7 +93,7 @@ extern struct multiboot_info *mboot_info;
 
 /* populated by the linker */
 extern void *kernel_end;
-#define kernel_begin 0x100000
+extern void *kernel_begin;
 
 void init_pmem_regions()
 {
@@ -109,7 +109,7 @@ void init_pmem_regions()
 		i += sizeof(struct mmap_entry);
 	}
 
-	bitmap_deinit_region(kernel_begin, (u32)kernel_length);
+	bitmap_deinit_region((u32)&kernel_begin, kernel_length);
 	bitmap_deinit_region(0, 0x1000000);
 }
 

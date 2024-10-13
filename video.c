@@ -22,7 +22,7 @@ void __write(const char *s, int n)
 		write_serial(*s);
 		if (*s == '\n')
 		{
-			video += (VIDEO_WIDTH*2)-(video-line_begin);
+			video += (COLUMNS*2)-(video-line_begin);
 			line_begin = video;
 			s++;
 		}

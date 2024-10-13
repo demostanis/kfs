@@ -5,8 +5,7 @@
 #include "lib.h"
 #include "serial.h"
 
-#define VIDEO_BADDR 0xB8000
-#define VIDEO_WIDTH 80
+#define VIDEO_BADDR 0xc00B8000
 
 #define COLUMNS 80
 #define LINES 25

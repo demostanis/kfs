@@ -10,7 +10,7 @@ LDFLAGS = -nostdlib -Tlinker.ld \
 QEMU_ARGS =
 
 AS = nasm
-ASFLAGS = -felf32
+ASFLAGS = -felf32 -g
 
 OBJS = $(addprefix o/,\
 	   kernel.o video.o printk.o\
@@ -106,4 +106,12 @@ run_gdb: run
 gdb:
 	gdb -x .gdb.script
 
-.PHONY: all run tests build/tcc release clean fclean clear re run_gdb gdb
+BOCHS = bochs
+BOCHS_ARGS = 
+bochs:
+	$(BOCHS) \
+		'boot: cdrom' \
+		'ata0-slave: type=cdrom, path=kfs.iso, status=inserted' \
+		$(BOCHS_ARGS)
+
+.PHONY: all run tests build/tcc release clean fclean clear re run_gdb gdb bochs

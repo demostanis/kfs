@@ -50,12 +50,13 @@ void init_page_directory()
 	assert(page_directory != 0,
 			"failed to allocate memory for page directory");
 
-	// map important memory regions like VGA:
-	// https://i.sstatic.net/A8gMs.png
-	assert(identity_map(0, 0x1000000) == 0,
-			"failed to map first 1MiB into VM");
-	assert(identity_map(kernel_begin, (u32)kernel_length) == 0,
+	// map kernel to higher half (which is already done
+	// by the pre-kernel code in kernel.s)
+	assert(map_many((u32)&kernel_begin, 0xc0000000, kernel_length) == 0,
 			"failed to map kernel into VM");
+
+	assert(map_many(0xb8000, 0xc00b8000, LINES*COLUMNS) == 0,
+			"failed to VGA into VM");
 
 	load_page_directory(page_directory);
 	enable_paging();
