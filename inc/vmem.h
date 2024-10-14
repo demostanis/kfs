@@ -45,7 +45,7 @@ struct page
 #define ADDR_TO_TABLE_INDEX(addr) ((addr) >> 12 & 0x3ff)
 
 // asmbits.s
-void load_page_directory(struct page_directory *);
+void load_page_directory(volatile struct page_directory *);
 void enable_paging();
 
 void init_page_directory();

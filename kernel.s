@@ -43,6 +43,10 @@ export _start:
 	jmp .map_page
 
 .setup_paging:
+	; setup recursive paging, so we can modify the page directory
+	; while in paging mode (see http://www.rohitab.com/discuss/topic/31139-tutorial-paging-memory-mapping-with-a-recursive-page-directory/)
+	mov dword [page_directory + 1023 * 4], page_directory + 3
+
 	; our table is the page directory's 768th entry (i.e. 0xc0000000)
 	mov dword [page_directory + 768 * 4], page_table0 + 3
 	; also map at the beginning of the memory, so the
