@@ -5,6 +5,9 @@
 #include "pmem.h"
 
 // https://wiki.osdev.org/Paging for structure descriptions
+//
+// note that bit-fields are not very portable, maybe we should
+// change them in the future
 
 #define NTABLES_PER_DIRECTORY 1024
 struct table
