@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 tests_begun=0
 
@@ -22,12 +22,12 @@ while true; do
 				(
 					echo -e "\x1b[1;31m"TEST FAILED"\x1b[0m"
 					echo expected=
-					echo "$line1"
-					echo "$line1" | hexdump -C
-					echo
-					echo got=
 					echo "${line2:1}"
 					echo "${line2:1}" | hexdump -C
+					echo
+					echo got=
+					echo "$line1"
+					echo "$line1" | hexdump -C
 				) >&2
 
 				exit 1
