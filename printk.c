@@ -7,22 +7,14 @@ void __printk(const char *s)
 
 void putchar(char c)
 {
-	char buf[2];
-
-	buf[0] = c;
-	buf[1] = 0;
-	__printk(buf);
+	__write(&c, 1);
 }
 
 void putcharpr(char c)
 {
 	if (c < '\x20' || c > '\x7f')
 		c = '.';
-	char buf[2];
-
-	buf[0] = c;
-	buf[1] = 0;
-	__printk(buf);
+	putchar(c);
 }
 
 void putbytespr(unsigned char *s, int size)
@@ -108,7 +100,7 @@ void putnbrx_##t(t n, int size)              \
 }
 putnbrx_for_t(u32)
 putnbrx_for_t(u64)
-// TODO: unsigned?
+// TODO: signed?
 
 int __printfmt(char *f, va_list *lst)
 {
@@ -151,6 +143,7 @@ int __printfmt(char *f, va_list *lst)
 			break;
 		case '%':
 			putchar('%');
+			inc = 1;
 			break;
 		case 'l':
 			longlong = 1;
@@ -204,9 +197,12 @@ TESTS()
 	assert_serial("Here are many numbers: 12 42 71897 0");
 
 	char *s = "ABC\x4";
-	printk("Bytes: %4B", s);
-	assert_serial("Bytes: ABC.");
+	printk("Bytes: %4B %% %%%%", s);
+	assert_serial("Bytes: ABC. % %%");
 
-	printk("Hex: %x%x%x%x", s[0], s[1], s[2], s[3]);
-	assert_serial("Hex: 0x410x420x430x4");
+	printk("Hex: %x%x%x%x --", s[0], s[1], s[2], s[3]);
+	assert_serial("Hex: 0x410x420x430x4 --");
+
+	printk("BINARY: %32b %b", 0b01001100110011001010101010101001, 0b100000);
+	assert_serial("BINARY: 0b01001100110011001010101010101001 0b100000");
 }
