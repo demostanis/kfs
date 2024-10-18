@@ -89,8 +89,8 @@ void putnbrx_##t(t n, int size)              \
 {                                            \
 	__printk("0x");                          \
                                              \
-	int i = n, j = 0;                        \
-	while (i /= 16)                          \
+	t i = n, j = 0;                          \
+	while (i >>= 4)                          \
 		++j;                                 \
 	int pad = size - j;                      \
 	while (pad-- > 1)                        \
