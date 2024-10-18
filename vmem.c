@@ -1,7 +1,5 @@
 #include "vmem.h"
 
-#define PAGE_DIRECTORY 0xffc00000
-
 volatile struct page_directory *virt_page_directory;
 
 int map_phys_to_virt(u32 paddr, u32 vaddr)
@@ -10,7 +8,6 @@ int map_phys_to_virt(u32 paddr, u32 vaddr)
 		ADDR_TO_DIRECTORY_INDEX(vaddr)];
 	if (!table->present)
 	{
-		pmem_info();
 		void *new_table = pmem_alloc_page();
 		if (new_table == 0)
 			return -ENOMEM;
@@ -18,11 +15,12 @@ int map_phys_to_virt(u32 paddr, u32 vaddr)
 		table->present = 1;
 		table->writable = 1;
 		table->addr = (u32)new_table >> 12;
-		bzero(PAGE_DIRECTORY + new_table, sizeof(table));
+
+		bzero((void *)ADDR_TO_VIRT_PAGE_TABLE(vaddr), sizeof(struct table));
 	}
 
 	struct page_table *new_table =
-		(struct page_table *)(PAGE_DIRECTORY + table->addr);
+		(struct page_table *)ADDR_TO_VIRT_PAGE_TABLE(vaddr);
 	struct page *new_page = &new_table->pages[ADDR_TO_TABLE_INDEX(vaddr)];
 
 	new_page->present = 1;

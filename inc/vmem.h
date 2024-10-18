@@ -44,8 +44,11 @@ struct page
 	u32 addr : 20;
 };
 
+#define PAGE_DIRECTORY 0xffc00000
+
 #define ADDR_TO_DIRECTORY_INDEX(addr) ((addr) >> 22 & 0x3ff)
 #define ADDR_TO_TABLE_INDEX(addr) ((addr) >> 12 & 0x3ff)
+#define ADDR_TO_VIRT_PAGE_TABLE(addr) (PAGE_DIRECTORY + ((addr) >> 10))
 
 // asmbits.s
 void load_page_directory(volatile struct page_directory *);
