@@ -61,8 +61,8 @@ run: release
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2
 TCC_SRC = http://download.savannah.gnu.org/releases/tinycc/$(TCC_ARCHIVE)
-build/tcc: build/tcc-$(TCC_VERSION)
-build/tcc-$(TCC_VERSION):
+build/tcc: build/tcc-$(TCC_VERSION)/$(ARCH)-tcc build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a
+build/tcc-$(TCC_VERSION)/$(ARCH)-tcc build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a:
 	mkdir -p build
 	curl -sLo build/$(TCC_ARCHIVE) $(TCC_SRC)
 	tar -C build -xf build/$(TCC_ARCHIVE)
