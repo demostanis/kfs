@@ -4,7 +4,7 @@ ARCH = i386
 
 CC = build/tcc-$(TCC_VERSION)/$(ARCH)-tcc
 LIBTCC = build/tcc-$(TCC_VERSION)/$(ARCH)-libtcc1.a
-CFLAGS = -Wall -Werror -Wextra -Iinc -g -DASSERTIONS
+CFLAGS = -Wall -Werror -Wextra -Iinc -g
 LDFLAGS = -nostdlib -Tlinker.ld \
 		  -m elf_$(ARCH) --gc-sections
 QEMU_ARGS =

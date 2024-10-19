@@ -1,6 +1,11 @@
 #!/bin/bash
 
 tests_begun=0
+is_panicing=0
+ret=0
+
+fail(){ echo -e "\x1b[1;31m"TEST FAILED"\x1b[0m"
+}
 
 while true; do
 	if (( ! tests_begun )); then
@@ -20,7 +25,7 @@ while true; do
 		if [ "$prefix" = " 002" ]; then
 			if [ "$line1" != "${line2:1}" ]; then
 				(
-					echo -e "\x1b[1;31m"TEST FAILED"\x1b[0m"
+					fail
 					echo expected=
 					echo "${line2:1}"
 					echo "${line2:1}" | hexdump -C
@@ -33,5 +38,17 @@ while true; do
 				exit 1
 			fi
 		fi
+
+		if (( is_panicing )); then
+			echo "$line1"
+			echo "$line2"
+		fi
+		if [[ "$line1" = panic\!* ]]; then
+			fail
+			echo "$line2"
+			is_panicing=1
+			ret=1
+		fi
 	fi
 done
+exit $ret

@@ -8,8 +8,20 @@ int strlen(const char *s);
 void memset(void *buf, int c, usize n);
 void bzero(void *buf, usize n);
 
+#if defined(DISABLE_ASSERTIONS) && !defined(RUNTESTS)
+# define assert(cond, msg)
+# define ensure(cond)
+#else
+# define assert(cond, msg)                           \
+{                                                    \
+	int ret = (cond);                            \
+	if (!ret)                                    \
+		panic("assertion failed: " # msg);   \
+}
+#define ensure(cond) assert(cond, # cond)
+#endif
+
 __attribute__((noreturn)) void panic(char *msg);
-void assert(int cond, char *msg);
 
 void shutdown();
 

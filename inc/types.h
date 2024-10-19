@@ -9,7 +9,7 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
 typedef unsigned long long u64;
-typedef u32 usize;
+typedef unsigned long usize;
 
 // TODO: should use in the code...
 typedef u32 addr;
