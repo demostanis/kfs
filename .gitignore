@@ -2,3 +2,4 @@ kfs
 kfs.iso
 build/
 o/
+.*.swp

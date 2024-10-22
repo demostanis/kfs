@@ -12,13 +12,19 @@ void bzero(void *buf, usize n);
 # define assert(cond, msg)
 # define ensure(cond)
 #else
-# define assert(cond, msg)                           \
-{                                                    \
-	int ret = (cond);                            \
-	if (!ret)                                    \
-		panic("assertion failed: " # msg);   \
+# define assert(cond, msg)               \
+{                                        \
+	int ret = (cond);                    \
+	if (!ret)                            \
+		panic("assertion failed: " msg); \
 }
-#define ensure(cond) assert(cond, # cond)
+# define ensure(cond) assert(cond, # cond)
+# define warn(cond, msg)         \
+{                                \
+	int ret = (cond);            \
+	if (ret)                     \
+		printk("warning: " msg); \
+}
 #endif
 
 __attribute__((noreturn)) void panic(char *msg);

@@ -83,7 +83,7 @@ void *pmem_alloc_page()
 	return (void *)(free_page * PAGESIZE);
 }
 
-void *pmem_free_page(void *addr)
+void pmem_free_page(void *addr)
 {
 	u32 page = (u32)addr / PAGESIZE;
 	bitmap_set_unused(page);

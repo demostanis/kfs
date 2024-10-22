@@ -34,6 +34,9 @@ void kcommon(int magic, struct multiboot_info *info)
 
 	mboot_info = skip_bytes(info, UNUSED_FIELDS_PADDING);
 
+	init_pmem_regions();
+	init_page_directory();
+
 	gdt_install();
 	clear_video();
 	disable_cursor();
@@ -41,8 +44,5 @@ void kcommon(int magic, struct multiboot_info *info)
 
 void kmain()
 {
-	init_pmem_regions();
-	init_page_directory();
-
 	printk("Hello, world!");
 }

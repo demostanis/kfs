@@ -52,7 +52,7 @@ export _start:
 	; also map at the beginning of the memory, so the
 	; CPU can still find the instructions after enabling
 	; paging (i.e. call higher_half). note that this is
-	; temporary, the actual page directory in C don't
+	; temporary, the actual page directory in C doesn't
 	; do this, else it wouldn't make sense to map the kernel
 	; in the higher half...
 	mov dword [page_directory], page_table0 + 3

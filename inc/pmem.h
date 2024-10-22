@@ -10,6 +10,7 @@ int bitmap_init_region(u32 addr, u32 length);
 int bitmap_deinit_region(u32 addr, u32 length);
 
 void *pmem_alloc_page();
+void pmem_free_page(void *addr);
 
 void init_pmem_regions();
 
