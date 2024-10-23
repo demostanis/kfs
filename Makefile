@@ -18,9 +18,16 @@ OBJS = $(addprefix o/,\
 	   pmem.o vmem.o kmain.o\
 	   )
 
+# build everything
 all: build/tcc $(NAME) release
 
+## i have no idea how to make this multiline...
+# show this help
+help:
+	@perl -e ' $$p=0; while(<>){ $$p=1 if/^# .*/; print $$_=~s/(.+):( |$$).*/\x1b[0;1;2m\$$ make $$1\x1b[0m\n/r=~s/^# /\x1b[1m# \x1b[0;2m/r if $$p; $$p=0 if /:( |$$)/; } ' Makefile | $${PAGER:-less} -R
+
 TEST =
+# run tests
 tests: CPPFLAGS+=-DRUNTESTS
 tests: ASFLAGS+=-DRUNTESTS
 tests: QEMU_ARGS+=-nographic
@@ -53,6 +60,7 @@ o/%.o: %.s | o
 o:
 	mkdir -p o
 
+# run inside QEMU
 run: release
 	qemu-system-$(ARCH) -enable-kvm \
 		-serial stdio -cdrom $(NAME).iso \
@@ -81,6 +89,7 @@ GRUB_EXCLUDED_FILES = boot/grub/x86_64-efi \
 					  boot/grub/i386-efi \
 					  System mach_kernel \
 					  efi efi.img
+# create a bootable image
 release: $(NAME).iso
 $(NAME).iso: $(NAME)
 	grub-mkrescue \
@@ -89,29 +98,37 @@ $(NAME).iso: $(NAME)
 		-o $@ $(NAME) rootfs -- \
 		-rm_r $(GRUB_EXCLUDED_FILES)
 
+# remove object files
 clean:
 	$(RM) $(OBJS)
 
+# remove object files and the kernel executable
 fclean: clean
 	$(RM) $(NAME)
 
+# remove the cross compiler
 clear:
 	$(RM) -r build
 
+# rebuild the kernel
 re: fclean all
 
+# run QEMU for GDB usage
+# this should be run before `make gdb`
 run_gdb: QEMU_ARGS+=-S -s
 run_gdb: run
 
+# run GDB
 gdb:
 	gdb -x .gdb.script
 
 BOCHS = bochs
 BOCHS_ARGS = 
-bochs:
+# run in bochs emulator
+bochs: release
 	$(BOCHS) \
 		'boot: cdrom' \
 		'ata0-slave: type=cdrom, path=kfs.iso, status=inserted' \
 		$(BOCHS_ARGS)
 
-.PHONY: all run tests build/tcc release clean fclean clear re run_gdb gdb bochs
+.PHONY: all help run tests build/tcc release clean fclean clear re run_gdb gdb bochs
