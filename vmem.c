@@ -2,7 +2,7 @@
 
 volatile struct page_directory *virt_page_directory;
 
-int map_phys_to_virt(u32 paddr, u32 vaddr)
+int map_phys_to_virt(addr paddr, addr vaddr)
 {
 	struct table *table = &virt_page_directory->tables[
 		ADDR_TO_DIRECTORY_INDEX(vaddr)];
@@ -16,7 +16,7 @@ int map_phys_to_virt(u32 paddr, u32 vaddr)
 		table->writable = 1;
 		table->addr = (u32)new_table >> 12;
 
-		bzero((void *)ADDR_TO_VIRT_PAGE_TABLE(vaddr), sizeof(struct table));
+		bzero((void *)ADDR_TO_VIRT_PAGE_TABLE(vaddr), sizeof(struct page_table));
 	}
 
 	struct page_table *new_table =
@@ -111,7 +111,7 @@ void init_page_directory()
 	// some reason it breaks the kernel when setting
 	// this table's pages to non present...
 	struct table *table = virt_page_directory->tables;
-	pmem_free_page((void *)table->addr);
+	//pmem_free_page((void *)table->addr);
 	table->present = 0;
 	table->addr = 0;
 

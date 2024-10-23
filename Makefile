@@ -15,7 +15,8 @@ ASFLAGS = -felf32 -g
 OBJS = $(addprefix o/,\
 	   kernel.o video.o printk.o\
 	   gdt.o lib.o serial.o\
-	   pmem.o vmem.o kmain.o\
+	   pmem.o vmem.o kmalloc.o\
+	   kmain.o\
 	   )
 
 # build everything

@@ -54,6 +54,9 @@ struct page
 void load_page_directory(volatile struct page_directory *);
 void enable_paging();
 
+int map_phys_to_virt(addr paddr, addr vaddr);
+void unmap_page(u32 vaddr);
+
 void init_page_directory();
 
 struct page_directory

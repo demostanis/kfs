@@ -109,8 +109,7 @@ void init_pmem_regions()
 		i += sizeof(struct mmap_entry);
 	}
 
-	bitmap_deinit_region((u32)&kernel_begin, kernel_length);
-	bitmap_deinit_region(0, 0x1000000);
+	bitmap_deinit_region(0, (u32)&kernel_end);
 }
 
 void pmem_info()

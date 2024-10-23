@@ -5,6 +5,7 @@
 #include "multiboot.h"
 #include "pmem.h"
 #include "vmem.h"
+#include "kmalloc.h"
 #include "tests.h"
 
 void print_addr(unsigned char *addr, int lines)
@@ -45,4 +46,12 @@ void kcommon(int magic, struct multiboot_info *info)
 void kmain()
 {
 	printk("Hello, world!");
+
+	void *ptr1 = kmalloc(6);
+
+	printk("ptr1 = %p", ptr1);
+
+	void *ptr2 = kmalloc(6);
+
+	printk("ptr1 = %p  ptr2 = %p", ptr1, ptr2);
 }
