@@ -7,6 +7,7 @@ char *strchr(const char *s, char c);
 int strlen(const char *s);
 void memset(void *buf, int c, usize n);
 void bzero(void *buf, usize n);
+void memmove(void *dst, void *src, usize n);
 
 #if defined(DISABLE_ASSERTIONS) && !defined(RUNTESTS)
 # define assert(cond, msg)

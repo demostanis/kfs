@@ -47,11 +47,10 @@ void kmain()
 {
 	printk("Hello, world!");
 
-	void *ptr1 = kmalloc(6);
-
-	printk("ptr1 = %p", ptr1);
-
-	void *ptr2 = kmalloc(6);
-
-	printk("ptr1 = %p  ptr2 = %p", ptr1, ptr2);
+	void *ptr = kmalloc(10);
+	while (ptr)
+	{
+		printk("ptr = %p", ptr);
+		ptr = kmalloc(10);
+	}
 }

@@ -5,10 +5,12 @@
 #include "lib.h"
 #include "serial.h"
 
-#define VIDEO_BADDR 0xc00B8000
-
 #define COLUMNS 80
 #define LINES 25
+
+#define VIDEO_BADDR ((volatile char *)0xc00b8000)
+#define VIDEO_LENGTH (COLUMNS*LINES*2)
+#define VIDEO_EADDR ((volatile char *)VIDEO_BADDR+VIDEO_LENGTH)
 
 void disable_cursor();
 void clear_video();

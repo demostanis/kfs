@@ -44,6 +44,25 @@ void bzero(void *buf, usize n)
 	memset(buf, 0, n);
 }
 
+void memmove(void *dst, void *src, usize n)
+{
+	if (src > dst)
+	{
+		usize i = n+1;
+		while (i-- > 0)
+			dst[i-1] = src[i-1];
+	}
+	else
+	{
+		usize i = 0;
+		while (i < n)
+		{
+			dst[i] = src[i];
+			i++;
+		}
+	}
+}
+
 __attribute__((noreturn)) void panic(char *msg)
 {
 	printk("panic!");

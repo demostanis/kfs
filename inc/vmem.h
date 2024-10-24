@@ -48,7 +48,8 @@ struct page
 
 #define ADDR_TO_DIRECTORY_INDEX(addr) ((addr) >> 22 & 0x3ff)
 #define ADDR_TO_TABLE_INDEX(addr) ((addr) >> 12 & 0x3ff)
-#define ADDR_TO_VIRT_PAGE_TABLE(addr) (PAGE_DIRECTORY + ((addr) >> 10))
+#define ADDR_TO_VIRT_PAGE_TABLE(addr) (PAGE_DIRECTORY + ((addr & 0xfff00000) / 1024))
+#define ADDR_TO_VIRT_PAGE(addr) (PAGE_DIRECTORY + ((addr) >> 10))
 
 // asmbits.s
 void load_page_directory(volatile struct page_directory *);
