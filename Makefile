@@ -61,11 +61,17 @@ o/%.o: %.s | o
 o:
 	mkdir -p o
 
-# run inside QEMU
-run: release
-	qemu-system-$(ARCH) -enable-kvm \
+_run: release
+	qemu-system-$(ARCH) \
 		-serial stdio -cdrom $(NAME).iso \
 		$(QEMU_ARGS) $(TEST)
+
+# run inside QEMU
+run: QEMU_ARGS+=-enable-kvm
+run: _run
+
+# run without KVM (used for GDB)
+run_nokvm: _run
 
 TCC_VERSION = 0.9.27
 TCC_ARCHIVE = tcc-$(TCC_VERSION).tar.bz2
@@ -117,7 +123,7 @@ re: fclean all
 # run QEMU for GDB usage
 # this should be run before `make gdb`
 run_gdb: QEMU_ARGS+=-S -s
-run_gdb: run
+run_gdb: run_nokvm
 
 # run GDB
 gdb:
@@ -132,4 +138,4 @@ bochs: release
 		'ata0-slave: type=cdrom, path=kfs.iso, status=inserted' \
 		$(BOCHS_ARGS)
 
-.PHONY: all help run tests build/tcc release clean fclean clear re run_gdb gdb bochs
+.PHONY: all help _run run run_nokvm tests build/tcc release clean fclean clear re run_gdb gdb bochs
