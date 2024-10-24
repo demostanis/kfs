@@ -1,8 +1,13 @@
 #include "video.h"
 
+volatile char *video = VIDEO_BADDR;
+volatile char *line_begin = VIDEO_BADDR;
+
 void clear_video()
 {
-	bzero((char *)VIDEO_BADDR, COLUMNS*LINES*2);
+	video = VIDEO_BADDR;
+	line_begin = VIDEO_BADDR;
+	bzero((char *)VIDEO_BADDR, VIDEO_LENGTH);
 }
 
 void disable_cursor()
@@ -13,9 +18,6 @@ void disable_cursor()
 
 void __write(const char *s, int n)
 {
-	static volatile char *video = (volatile char *)VIDEO_BADDR;
-	static volatile char *line_begin = (volatile char *)VIDEO_BADDR;
-
 	int i = 0;
 	while (*s && i < n)
 	{
@@ -30,6 +32,13 @@ void __write(const char *s, int n)
 		{
 			*video++ = *s++;
 			*video++ = 0x1F;
+		}
+		if (video == VIDEO_EADDR)
+		{
+			video = VIDEO_BADDR;
+			line_begin = VIDEO_BADDR;
+			memmove((void *)VIDEO_BADDR,
+					(void *)video + COLUMNS * 2, VIDEO_LENGTH);
 		}
 		i++;
 	}

@@ -19,9 +19,8 @@ int map_phys_to_virt(addr paddr, addr vaddr)
 		bzero((void *)ADDR_TO_VIRT_PAGE_TABLE(vaddr), sizeof(struct page_table));
 	}
 
-	struct page_table *new_table =
-		(struct page_table *)ADDR_TO_VIRT_PAGE_TABLE(vaddr);
-	struct page *new_page = &new_table->pages[ADDR_TO_TABLE_INDEX(vaddr)];
+	struct page *new_page =
+		(struct page *)ADDR_TO_VIRT_PAGE(vaddr);
 	//warn(new_page->present, "page already mapped");
 
 	new_page->present = 1;
@@ -82,7 +81,7 @@ int identity_map(u32 addr, int size)
 void unmap_until(u32 vaddr, usize size)
 {
 	usize i = 0;
-	while (i <= size)
+	while (i < size)
 	{
 		unmap_page(vaddr+i);
 		i += PAGESIZE;
@@ -96,6 +95,9 @@ void init_page_directory()
 	// last page table in the page directory (recursive paging)
 	virt_page_directory = (volatile struct page_directory *)0xfffff000;
 
+	// unmap the first 4MiB (unlike vcornill)
+	unmap_until(0, 0x100000);
+
 	// map kernel to higher half (which is already done
 	// by the pre-kernel code in kernel.s)
 	assert(map_many((u32)&kernel_begin, 0xc0000000, kernel_length) == 0,
@@ -103,17 +105,8 @@ void init_page_directory()
 
 	// TODO: maybe this should be done in kernel.s so panics
 	// appear when this assertion fails?
-	assert(map_many(0xb8000, VIDEO_BADDR, LINES*COLUMNS) == 0,
+	assert(map_many(0xb8000, (addr)VIDEO_BADDR, LINES*COLUMNS) == 0,
 			"failed to map VGA into VM");
-
-	// unmap the first 4MiB (unlike vcornill)
-	// NOTE: we don't use unmap_until(), because for
-	// some reason it breaks the kernel when setting
-	// this table's pages to non present...
-	struct table *table = virt_page_directory->tables;
-	//pmem_free_page((void *)table->addr);
-	table->present = 0;
-	table->addr = 0;
 
 	load_page_directory((struct page_directory *)&page_directory);
 	enable_paging();

@@ -45,6 +45,5 @@ void *kmalloc(usize size)
 	if (ptr % ALIGNMENT != 0)
 		ptr += ALIGNMENT - ptr % ALIGNMENT;
 
-	heap_alloc_page(); // don't mind this little guy...
 	return (void *)ptr;
 }
