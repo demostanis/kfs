@@ -28,13 +28,14 @@ help:
 	@perl -e ' $$p=0; while(<>){ $$p=1 if/^# .*/; print $$_=~s/(.+):( |$$).*/\x1b[0;1;2m\$$ make $$1\x1b[0m\n/r=~s/^# /\x1b[1m# \x1b[0;2m/r if $$p; $$p=0 if /:( |$$)/; } ' Makefile | $${PAGER:-less} -R
 
 TEST =
-# run tests
-tests: CPPFLAGS+=-DRUNTESTS
-tests: ASFLAGS+=-DRUNTESTS
-tests: QEMU_ARGS+=-nographic
-tests: QEMU_ARGS+=-monitor none
-tests: TEST=| ./serial_examiner
+# run tests, with or without KVM
+tests tests_nokvm: CPPFLAGS+=-DRUNTESTS
+tests tests_nokvm: ASFLAGS+=-DRUNTESTS
+tests tests_nokvm: QEMU_ARGS+=-nographic
+tests tests_nokvm: QEMU_ARGS+=-monitor none
+tests tests_nokvm: TEST=| ./serial_examiner
 tests: re run
+tests_nokvm: re run_nokvm
 
 $(NAME): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBTCC)
@@ -46,13 +47,11 @@ o/%.o: %.c | o
 o/kmain.o: kmain.c | o
 	rm -f $@ # else *.o will match kmain.o
 	tests=$$(nm o/*.o | grep 'ktest_' | awk '{print$$3}' | sort -u)
-	( echo 'void ktest(){'; \
+	( echo 'void ktest(){begin_test();'; \
 		echo "$$tests" | sed 's/.*/\
-			begin_test();\
 			void &(); &();\
-			end_test();\
 			/g'; \
-		echo '}' ) | \
+		echo 'end_test();}' ) | \
 		cat $< - | $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -
 
 o/%.o: %.s | o
