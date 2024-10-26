@@ -10,6 +10,7 @@
 
 #define VIDEO_BADDR ((volatile char *)0xc00b8000)
 #define VIDEO_LENGTH (COLUMNS*LINES*2)
+#define LINE_LENGTH (COLUMNS*2)
 #define VIDEO_EADDR ((volatile char *)VIDEO_BADDR+VIDEO_LENGTH)
 
 void disable_cursor();

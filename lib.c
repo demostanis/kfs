@@ -46,18 +46,20 @@ void bzero(void *buf, usize n)
 
 void memmove(void *dst, void *src, usize n)
 {
-	if (src > dst)
+	if (src < dst)
 	{
-		usize i = n+1;
+		usize i = n;
 		while (i-- > 0)
-			dst[i-1] = src[i-1];
+			((u8 *)dst)[i] = ((u8 *)src)[i];
+		if (n)
+			*dst = *src;
 	}
 	else
 	{
 		usize i = 0;
 		while (i < n)
 		{
-			dst[i] = src[i];
+			((u8 *)dst)[i] = ((u8 *)src)[i];
 			i++;
 		}
 	}
@@ -85,4 +87,18 @@ TESTS()
 	ensure(strcmp("hello", "hellp") == 1);
 
 	ensure(strcmp(strchr("hello world", 'w'), "world") == 0);
+
+	{
+		char dst[] = "hello brigitte";
+		char src[] = "world";
+		memmove(dst + 6, src, sizeof(src));
+		ensure(strcmp(dst, "hello world") == 0);
+	}
+
+	{
+		char dst[] = "world hello";
+		char *src = dst + 6;
+		memmove(dst, src, 5);
+		ensure(strcmp(dst, "hello hello") == 0);
+	}
 }

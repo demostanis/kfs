@@ -24,7 +24,7 @@ void __write(const char *s, int n)
 		write_serial(*s);
 		if (*s == '\n')
 		{
-			video += (COLUMNS*2)-(video-line_begin);
+			video += (LINE_LENGTH)-(video-line_begin);
 			line_begin = video;
 			s++;
 		}
@@ -35,10 +35,12 @@ void __write(const char *s, int n)
 		}
 		if (video == VIDEO_EADDR)
 		{
-			video = VIDEO_BADDR;
-			line_begin = VIDEO_BADDR;
 			memmove((void *)VIDEO_BADDR,
-					(void *)video + COLUMNS * 2, VIDEO_LENGTH);
+					(void *)VIDEO_BADDR + LINE_LENGTH,
+					VIDEO_LENGTH - LINE_LENGTH);
+			video -= LINE_LENGTH;
+			line_begin = video;
+			bzero((void *)video, LINE_LENGTH);
 		}
 		i++;
 	}
