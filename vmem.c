@@ -53,8 +53,6 @@ void unmap_page(u32 vaddr)
 			ADDR_TO_DIRECTORY_INDEX(vaddr)];
 		pmem_free_page((void *)empty_table->addr);
 
-		printk("freeing page table");
-
 		empty_table->present = 0;
 		empty_table->addr = 0;
 	}
