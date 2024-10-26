@@ -21,7 +21,7 @@ int map_phys_to_virt(addr paddr, addr vaddr)
 
 	struct page *new_page =
 		(struct page *)ADDR_TO_VIRT_PAGE(vaddr);
-	//warn(new_page->present, "page already mapped");
+	warn(new_page->present, "page already mapped");
 
 	new_page->present = 1;
 	new_page->writable = 1;
