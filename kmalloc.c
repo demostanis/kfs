@@ -57,13 +57,15 @@ void *kmalloc(usize size)
 {
 	assert(size != 0, "zero kmalloc size");
 
+	int npages = 1 + size / PAGESIZE;
 	struct block *block = find_free_block(size);
 	if (block == 0)
-		block = heap_alloc_pages(1 + size / PAGESIZE);
+		block = heap_alloc_pages(npages);
 	warn(block == 0, "failed to allocate page in VM, OOM?");
 	if (block == 0)
 		return 0;
 
+	block->magic = BLOCK_MAGIC;
 	block->size = size;
 	block->is_free = 0;
 	block->next = 0;
@@ -82,18 +84,18 @@ void *kmalloc(usize size)
 	if (ptr % ALIGNMENT != 0)
 		ptr += ALIGNMENT - ptr % ALIGNMENT;
 
-	usize next_page = ((addr)block & 0xfffff000) + PAGESIZE;
+	usize next_page = BLOCK_PAGE_ADDR(block) + npages * PAGESIZE;
 	usize needed_bytes = ALIGNMENT
 		+ sizeof(struct block)
 		+ 1; /* minimum kmalloc size */
 	usize free_in_page = next_page - (ptr + size);
-	if (needed_bytes <= free_in_page)
+	if (needed_bytes < free_in_page)
 	{
 		// we can place another block in page
 		struct block *next_block = (struct block *)(ptr + size);
 
 		next_block->is_free = 1;
-		next_block->size = size;
+		next_block->size = free_in_page - needed_bytes;
 		next_block->next = 0;
 
 		block->next = next_block;
@@ -106,4 +108,28 @@ void *kmalloc(usize size)
 		;
 
 	return (void *)ptr;
+}
+
+void kfree(void *ptr)
+{
+	struct block *block = 0;
+
+	void *maybe_magic = ptr - ALIGNMENT - sizeof(struct block);
+	while (maybe_magic < ptr)
+	{
+		if (*(int *)maybe_magic == BLOCK_MAGIC)
+		{
+			block = (struct block *)maybe_magic;
+			break;
+		}
+		maybe_magic++;
+	}
+
+	assert(block != 0, "kfree: invalid pointer (corrupted block?)");
+
+	block->is_free = 1;
+	if (block < first_free_block)
+		first_free_block = block;
+
+	// TODO: defragment
 }

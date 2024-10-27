@@ -47,7 +47,7 @@ void kmain()
 {
 	printk("Hello, world!");
 
-	void *ptr = kmalloc(4059);
+	void *ptr = kmalloc(4054);
 	printk("ptr1 = %p", ptr);
 	ptr = kmalloc(1);
 	printk("ptr2 = %p", ptr);
@@ -62,6 +62,11 @@ void kmain()
 	ptr = kmalloc(10000);
 	memset(ptr, 'A', 10000);
 	printk("ptr6 = %p", ptr);
+
 	ptr = kmalloc(10);
 	printk("ptr7 = %p", ptr);
+	kfree(ptr);
+	printk("kfree(ptr7)");
+	ptr = kmalloc(10);
+	printk("ptr8 = %p", ptr);
 }
