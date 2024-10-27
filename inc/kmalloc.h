@@ -10,6 +10,7 @@
 struct block
 {
 	struct block *next;
+	int is_free;
 	usize size;
 };
 
