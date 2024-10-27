@@ -37,7 +37,6 @@ void *heap_alloc_pages(int n)
 
 struct block *blocks;
 struct block *first_free_block;
-struct block *last_block;
 
 struct block *find_free_block(usize size)
 {
@@ -75,9 +74,6 @@ void *kmalloc(usize size)
 
 	if (!blocks)
 		blocks = block;
-	if (last_block)
-		last_block->next = block;
-	last_block = block;
 	if (first_free_block == block)
 		first_free_block = block->next;
 
