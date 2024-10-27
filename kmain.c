@@ -46,10 +46,4 @@ void kcommon(int magic, struct multiboot_info *info)
 void kmain()
 {
 	printk("Hello, world!");
-
-	while (1)
-	{
-		void *ptr = kmalloc(18);
-		kfree(ptr);
-	}
 }

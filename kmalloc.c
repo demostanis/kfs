@@ -178,6 +178,25 @@ usize n_used_blocks()
 	}
 	return n;
 }
+
+// asked by KFS-3 subject...
+usize ptr_size(void *ptr)
+{
+	struct block *block = 0;
+
+	void *maybe_magic = ptr - sizeof(struct block);
+	while (maybe_magic > ptr - sizeof(struct block) - ALIGNMENT)
+	{
+		if (*(int *)maybe_magic == BLOCK_MAGIC)
+		{
+			block = (struct block *)maybe_magic;
+			break;
+		}
+		maybe_magic--;
+	}
+	return block->size;
+}
+
 #define abs(n) ((n) < 0 ? -(n) : (n))
 
 TESTS()
@@ -205,6 +224,7 @@ TESTS()
 	kfree(ptr3);
 
 	void *ptr4 = kmalloc(10000);
+	ensure(ptr_size(ptr4) == 10000);
 	memset(ptr4, 'A', 10000);
 	kfree(ptr4);
 
