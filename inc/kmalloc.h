@@ -15,6 +15,7 @@ struct block
 {
 	int magic;
 	struct block *next;
+	struct block *prev;
 	int is_free;
 	usize size;
 };
