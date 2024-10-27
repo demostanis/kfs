@@ -62,7 +62,7 @@ int bitmap_deinit_region(u32 addr, u32 length)
 {
 	u32 end = addr + length;
 
-	while (addr + PAGESIZE <= end)
+	while (addr <= end)
 	{
 		bitmap_set_used(addr / PAGESIZE);
 		addr += PAGESIZE;
