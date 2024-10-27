@@ -19,6 +19,22 @@ void *heap_alloc_page()
 	return (void *)virt_addr;
 }
 
+void *heap_alloc_pages(int n)
+{
+	void *page = heap_alloc_page();
+	if (page == 0)
+		return 0;
+
+	while (--n)
+	{
+		void *next = heap_alloc_page();
+		if (next == 0)
+			// TODO: free everything?
+			return 0;
+	}
+	return page;
+}
+
 struct block *blocks;
 struct block *first_free_block;
 struct block *last_block;
@@ -37,20 +53,13 @@ struct block *find_free_block(usize size)
 	return 0;
 }
 
-void noop()
-{
-}
-
 void *kmalloc(usize size)
 {
-	noop(); // don't mind this little guy
-
 	assert(size != 0, "zero kmalloc size");
-	assert(size < PAGESIZE, "need to handle this lol");
 
 	struct block *block = find_free_block(size);
 	if (block == 0)
-		block = heap_alloc_page();
+		block = heap_alloc_pages(1 + size / PAGESIZE);
 	warn(block == 0, "failed to allocate page in VM, OOM?");
 	if (block == 0)
 		return 0;

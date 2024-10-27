@@ -58,4 +58,10 @@ void kmain()
 	printk("ptr4 = %p", ptr);
 	ptr = kmalloc(15);
 	printk("ptr5 = %p", ptr);
+
+	ptr = kmalloc(10000);
+	memset(ptr, 'A', 10000);
+	printk("ptr6 = %p", ptr);
+	ptr = kmalloc(10);
+	printk("ptr7 = %p", ptr);
 }
