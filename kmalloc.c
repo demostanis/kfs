@@ -114,15 +114,15 @@ void kfree(void *ptr)
 {
 	struct block *block = 0;
 
-	void *maybe_magic = ptr - ALIGNMENT - sizeof(struct block);
-	while (maybe_magic < ptr)
+	void *maybe_magic = ptr - sizeof(struct block);
+	while (maybe_magic > ptr - sizeof(struct block) - ALIGNMENT)
 	{
 		if (*(int *)maybe_magic == BLOCK_MAGIC)
 		{
 			block = (struct block *)maybe_magic;
 			break;
 		}
-		maybe_magic++;
+		maybe_magic--;
 	}
 
 	assert(block != 0, "kfree: invalid pointer (corrupted block?)");
