@@ -5,6 +5,11 @@ void __printk(const char *s)
 	__write(s, strlen(s));
 }
 
+void putstr(char *s)
+{
+	__printk(s);
+}
+
 void putchar(char c)
 {
 	__write(&c, 1);

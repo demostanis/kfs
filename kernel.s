@@ -85,7 +85,9 @@ higher_half:
 	call shutdown
 %else
 	call kmain
+.hang:
 	hlt
+	jmp .hang
 %endif
 
 %include "asmbits.s"

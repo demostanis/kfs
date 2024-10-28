@@ -16,4 +16,4 @@
 			: "=a"(ret) \
 			: "Nd"(port) \
 			: "memory"); \
-		return ret; })
+		ret; })

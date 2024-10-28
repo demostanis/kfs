@@ -1,11 +1,13 @@
 #include "lib.h"
 #include "gdt.h"
+#include "idt.h"
 #include "video.h"
 #include "printk.h"
 #include "multiboot.h"
 #include "pmem.h"
 #include "vmem.h"
 #include "kmalloc.h"
+#include "keyboard.h"
 #include "tests.h"
 
 void print_addr(unsigned char *addr, int lines)
@@ -39,11 +41,23 @@ void kcommon(int magic, struct multiboot_info *info)
 	init_page_directory();
 
 	gdt_install();
+	idt_install();
 	clear_video();
 	disable_cursor();
 }
 
+char prompt[] = "kfs # ";
+int user_input_start = sizeof(prompt)-1;
+
 void kmain()
 {
-	printk("Hello, world!");
+	while (1)
+	{
+		putstr(prompt);
+		char *line = get_line();
+		putstr(line);
+		if (*line)
+			putchar('\n');
+		kfree(line);
+	}
 }

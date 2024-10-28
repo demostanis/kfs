@@ -15,4 +15,5 @@
 
 void disable_cursor();
 void clear_video();
+void backspace();
 void __write(const char *s, int n);

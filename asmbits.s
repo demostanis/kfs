@@ -28,3 +28,20 @@ export enable_paging:
 	or eax, 0x80000000
 	mov cr0, eax
 	ret
+
+export isr_wrapper:
+	extern interrupt_handler
+
+	; tcc doesn't support __attribute__((interrupt)) ;(
+	pushad
+	cld
+	call interrupt_handler
+	popad
+	iret
+
+export load_idt:
+	extern idtp ; idt.c
+
+	lidt [idtp]
+	sti
+	ret
