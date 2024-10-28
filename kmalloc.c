@@ -51,6 +51,33 @@ struct block *find_free_block(usize size)
 	return 0;
 }
 
+struct block *find_block(void *ptr)
+{
+	struct block *block = 0;
+
+	void *maybe_magic = ptr - sizeof(struct block);
+	while (maybe_magic > ptr - sizeof(struct block) - ALIGNMENT)
+	{
+		if (*(int *)maybe_magic == BLOCK_MAGIC)
+		{
+			block = (struct block *)maybe_magic;
+			break;
+		}
+		maybe_magic--;
+	}
+
+	return block;
+}
+
+// get the user usable address after a block
+addr block_ptr(struct block *block)
+{
+	addr ptr = (addr)block + sizeof(struct block);
+	if (ptr % ALIGNMENT != 0)
+		ptr += ALIGNMENT - ptr % ALIGNMENT;
+	return ptr;
+}
+
 void *kmalloc(usize size)
 {
 	assert(size != 0, "zero kmalloc size");
@@ -77,9 +104,7 @@ void *kmalloc(usize size)
 	if (first_free_block == block)
 		first_free_block = block->next;
 
-	addr ptr = (addr)block + sizeof(struct block);
-	if (ptr % ALIGNMENT != 0)
-		ptr += ALIGNMENT - ptr % ALIGNMENT;
+	addr ptr = block_ptr(block);
 
 	usize next_page = BLOCK_PAGE_ADDR(block) + npages * PAGESIZE;
 	usize needed_bytes = ALIGNMENT
@@ -110,19 +135,10 @@ void *kmalloc(usize size)
 
 void kfree(void *ptr)
 {
-	struct block *block = 0;
+	if (ptr == 0)
+		return;
 
-	void *maybe_magic = ptr - sizeof(struct block);
-	while (maybe_magic > ptr - sizeof(struct block) - ALIGNMENT)
-	{
-		if (*(int *)maybe_magic == BLOCK_MAGIC)
-		{
-			block = (struct block *)maybe_magic;
-			break;
-		}
-		maybe_magic--;
-	}
-
+	struct block *block = find_block(ptr);
 	assert(block != 0, "kfree: invalid pointer (corrupted block?)");
 
 	block->is_free = 1;
@@ -142,6 +158,19 @@ void kfree(void *ptr)
 		prev_block->size += block->size + sizeof(struct block);
 		prev_block->next = block->next;
 	}
+}
+
+void *krealloc(void *ptr, usize new_size)
+{
+	struct block *block = find_block(ptr);
+	assert(block != 0, "krealloc: invalid pointer");
+
+	void *new_ptr = kmalloc(new_size);
+	if (new_ptr == 0)
+		return 0;
+	memmove(new_ptr, (void *)block_ptr(block), block->size);
+	kfree(ptr);
+	return new_ptr;
 }
 
 #include "tests.h"
@@ -175,21 +204,10 @@ usize n_used_blocks()
 	return n;
 }
 
-// asked by KFS-3 subject...
-usize ptr_size(void *ptr)
+usize ksize(void *ptr)
 {
-	struct block *block = 0;
-
-	void *maybe_magic = ptr - sizeof(struct block);
-	while (maybe_magic > ptr - sizeof(struct block) - ALIGNMENT)
-	{
-		if (*(int *)maybe_magic == BLOCK_MAGIC)
-		{
-			block = (struct block *)maybe_magic;
-			break;
-		}
-		maybe_magic--;
-	}
+	struct block *block = find_block(ptr);
+	ensure(block != 0);
 	return block->size;
 }
 
@@ -220,9 +238,16 @@ TESTS()
 	kfree(ptr3);
 
 	void *ptr4 = kmalloc(10000);
-	ensure(ptr_size(ptr4) == 10000);
+	ensure(ksize(ptr4) == 10000);
 	memset(ptr4, 'A', 10000);
 	kfree(ptr4);
+
+	void *ptr5 = kmalloc(2);
+	ptr5 = krealloc(ptr5, 60);
+	ensure(ksize(ptr5) == 60);
+	kfree(ptr5);
+
+	kfree(0);
 
 	// valgrind!!!!!!!!!!
 	ensure(n_used_blocks() == 0);

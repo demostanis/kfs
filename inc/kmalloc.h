@@ -21,4 +21,5 @@ struct block
 };
 
 void *kmalloc(usize size);
+void *krealloc(void *ptr, usize new_size);
 void kfree(void *ptr);
