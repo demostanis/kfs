@@ -65,15 +65,24 @@ void memmove(void *dst, void *src, usize n)
 	}
 }
 
+void stacktrace()
+{
+	printk("stack trace:");
+	struct frame *frame = __builtin_frame_address(0);
+
+	while (frame)
+	{
+		printk("  %p", frame->eip);
+		frame = frame->ebp;
+	}
+}
+
 __attribute__((noreturn)) void panic(char *msg)
 {
-	printk("panic!");
+	putstr("\npanic! ");
 	printk(msg);
+	stacktrace();
 	shutdown();
-	// TODO: stack trace
-	// TODO: maybe this should loop instead of shutting down?
-	// TODO: this should write to 0xb8000 if paging isn't enabled,
-	// maybe do a strcpy since we don't use formats anyway?
 }
 
 #include "tests.h"

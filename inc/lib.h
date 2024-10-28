@@ -4,6 +4,7 @@
 #include "printk.h"
 
 char *strchr(const char *s, char c);
+char strcmp(const char *s1, const char *s2);
 int strlen(const char *s);
 void memset(void *buf, int c, usize n);
 void bzero(void *buf, usize n);
@@ -27,6 +28,12 @@ void memmove(void *dst, void *src, usize n);
 		printk("warning: " msg); \
 }
 #endif
+
+struct frame
+{
+	struct frame *ebp;
+	u32 eip;
+};
 
 __attribute__((noreturn)) void panic(char *msg);
 

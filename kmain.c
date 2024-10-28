@@ -58,6 +58,10 @@ void kmain()
 		putstr(line);
 		if (*line)
 			putchar('\n');
+
+		if (strcmp(line, "panic") == 0)
+			panic("triggered panic");
+
 		kfree(line);
 	}
 }
