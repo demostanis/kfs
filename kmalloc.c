@@ -215,6 +215,14 @@ usize ksize(void *ptr)
 
 TESTS()
 {
+	struct block *blocks_backup = blocks;
+	struct block *first_free_block_backup = first_free_block;
+	usize heap_top_backup = heap_top;
+	// do not reuse the same heap as the rest of the kernel
+	blocks = 0;
+	first_free_block = 0;
+	heap_top += 0x4000000;
+
 	void *ptr = kmalloc(16);
 	ensure(n_used_blocks() == 1);
 	kfree(ptr);
@@ -251,4 +259,9 @@ TESTS()
 
 	// valgrind!!!!!!!!!!
 	ensure(n_used_blocks() == 0);
+
+	// restore old kernel heap
+	blocks = blocks_backup;
+	first_free_block = first_free_block_backup;
+	heap_top = heap_top_backup;
 }
