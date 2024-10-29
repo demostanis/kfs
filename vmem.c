@@ -95,6 +95,8 @@ void init_page_directory()
 
 	// unmap the first 4MiB (unlike vcornill)
 	unmap_until(0, 0x100000);
+	// ensure the first table is not present (for NULL)
+	virt_page_directory->tables->present = 0;
 
 	// map kernel to higher half (which is already done
 	// by the pre-kernel code in kernel.s)
