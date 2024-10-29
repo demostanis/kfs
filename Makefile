@@ -14,7 +14,7 @@ ASFLAGS = -felf32 -g
 
 OBJS = $(addprefix o/,\
 	   kernel.o video.o printk.o\
-	   gdt.o lib.o serial.o\
+	   gdt.o lib.o panic.o serial.o\
 	   pmem.o vmem.o kmalloc.o\
 	   idt.o keyboard.o\
 	   kmain.o\

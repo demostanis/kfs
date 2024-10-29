@@ -19,7 +19,7 @@ usize bufi;
 int has_line;
 int ignore_next;
 
-void interrupt_handler()
+void interrupt_handler_9()
 {
 	u8 scan_code = SCAN_CODE();
 

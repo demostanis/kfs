@@ -61,6 +61,8 @@ void kmain()
 
 		if (strcmp(line, "panic") == 0)
 			panic("triggered panic");
+		else if (strcmp(line, "fault") == 0)
+			*((volatile char *)0x0) = 0;
 
 		kfree(line);
 	}

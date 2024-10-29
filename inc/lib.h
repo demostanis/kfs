@@ -29,15 +29,16 @@ void memmove(void *dst, void *src, usize n);
 }
 #endif
 
-struct frame
-{
-	struct frame *ebp;
-	u32 eip;
-};
-
-__attribute__((noreturn)) void panic(char *msg);
-
+void stacktrace();
 void shutdown();
+
+#define panic(msg, ...) \
+	do \
+	{ \
+		printk("\npanic! " msg, ## __VA_ARGS__); \
+		stacktrace(); \
+		shutdown(); \
+	} while (0)
 
 /* we pack each member to make sure tcc does
  * not fill our structure with more data for

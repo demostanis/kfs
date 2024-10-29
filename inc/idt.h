@@ -27,6 +27,5 @@ struct idt_ptr
 
 // asmbits.s
 void load_idt();
-void isr_wrapper();
 
 void idt_install();

@@ -65,26 +65,6 @@ void memmove(void *dst, void *src, usize n)
 	}
 }
 
-void stacktrace()
-{
-	printk("stack trace:");
-	struct frame *frame = __builtin_frame_address(0);
-
-	while (frame)
-	{
-		printk("  %p", frame->eip);
-		frame = frame->ebp;
-	}
-}
-
-__attribute__((noreturn)) void panic(char *msg)
-{
-	putstr("\npanic! ");
-	printk(msg);
-	stacktrace();
-	shutdown();
-}
-
 #include "tests.h"
 
 TESTS()
