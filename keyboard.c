@@ -37,6 +37,19 @@ void interrupt_handler_9()
 		char key = keymap[scan_code];
 		if (key)
 		{
+			if (buf == 0)
+			{
+				buf = kmalloc(BUFFER_SIZE);
+				if (buf == 0)
+					MEMFAIL();
+			}
+			if (bufi >= BUFFER_SIZE)
+			{
+				buf = krealloc(buf, bufi + BUFFER_SIZE);
+				if (buf == 0)
+					MEMFAIL();
+			}
+
 			if (key == '\n')
 			{
 				buf[bufi] = 0;
@@ -55,18 +68,6 @@ void interrupt_handler_9()
 
 			putchar(key);
 
-			if (buf == 0)
-			{
-				buf = kmalloc(BUFFER_SIZE);
-				if (buf == 0)
-					MEMFAIL();
-			}
-			if (bufi >= BUFFER_SIZE)
-			{
-				buf = krealloc(buf, bufi + BUFFER_SIZE);
-				if (buf == 0)
-					MEMFAIL();
-			}
 			buf[bufi++] = key;
 		}
 	}
