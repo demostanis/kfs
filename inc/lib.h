@@ -29,6 +29,7 @@ void memmove(void *dst, void *src, usize n);
 }
 #endif
 
+void load_symbols();
 void stacktrace();
 void shutdown();
 
@@ -56,3 +57,6 @@ void shutdown();
 
 #define len(t) \
 	(sizeof t/sizeof(*t))
+
+#define reloc(addr) \
+	(0xc0000000+(void *)addr)

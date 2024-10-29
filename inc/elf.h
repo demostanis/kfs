@@ -3,6 +3,9 @@
 #include "types.h"
 
 #define SHT_SYMTAB 2
+#define STT_FUNC 2
+
+#define ELF_ST_TYPE(symtab) ((symtab).info & 0xf)
 
 struct elf_shdr
 {
@@ -27,4 +30,3 @@ struct elf_sym
 	u8 other;
 	u16 shndx;
 };
-

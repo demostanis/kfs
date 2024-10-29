@@ -40,30 +40,6 @@ void kcommon(int magic, struct multiboot_info *info)
 
 	mboot_info = skip_bytes(info, UNUSED_FIELDS_PADDING);
 
-	int i = 0;
-	struct elf_shdr *shdr =
-		(struct elf_shdr *)mboot_info->elf_sections.addr;
-	while (i < mboot_info->elf_sections.num)
-	{
-		struct elf_shdr header = shdr[i];
-		if (header.type == SHT_SYMTAB)
-		{
-			struct elf_sym *symtab = (struct elf_sym *)header.addr;
-			int nsymbols = header.size / sizeof(struct elf_sym);
-			char *strtab = (char *)shdr[header.link].addr;
-
-			int j = 0;
-			while (j < nsymbols)
-			{
-				printk("found symbol %s at addr %p",
-						strtab+symtab[j].name,
-						strtab+symtab[j].value);
-				j++;
-			}
-		}
-		i++;
-	}
-
 	init_pmem_regions();
 	init_page_directory();
 
@@ -71,6 +47,11 @@ void kcommon(int magic, struct multiboot_info *info)
 	idt_install();
 	clear_video();
 	disable_cursor();
+
+	// TODO: why does it say page already mapped?
+	unmap_page((addr)reloc(mboot_info));
+	map_phys_to_virt((addr)mboot_info, (addr)reloc(mboot_info));
+	load_symbols(reloc(mboot_info));
 }
 
 char prompt[] = "kfs # ";

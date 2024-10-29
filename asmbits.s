@@ -36,7 +36,17 @@ export isr_wrapper_%1:
 	; tcc doesn't support __attribute__((interrupt)) ;(
 	pushad
 	cld
+
+	; push stack frame containing the faulty function
+	; 36 = sizeof(usize) * (8 (n of registers pushed to the stack
+	; by pushad) + 1)
+	push dword [esp + 36]
+	push ebp
+	mov ebp, esp
+
 	call interrupt_handler_%1
+
+	add esp, 8
 	popad
 	iret
 %endmacro
