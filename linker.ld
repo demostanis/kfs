@@ -35,5 +35,8 @@ SECTIONS
 	/*. = 0x800;*/
 	.gdt : AT(ADDR(.gdt) - virt) { *(.gdt) }
 
+	/* reserve some room for symtab and strtab */
+	. += 0x10000;
+
 	kernel_end = . - virt;
 }
