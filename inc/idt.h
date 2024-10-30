@@ -20,6 +20,7 @@
 #define GPF_IV 13
 
 #define LINE 28 /* line received interrupt */
+#define SYSCALL 0x80 /* syscalls interrupt (for future use) */
 
 struct idt_entry
 {

@@ -29,6 +29,7 @@ void idt_install()
 	// (note: for the signal to be emittable, it needs
 	// to be specified in emit_signal() (asmbits.s))
 	handle_interrupt(LINE);
+	handle_interrupt(SYSCALL);
 
 	load_idt();
 }

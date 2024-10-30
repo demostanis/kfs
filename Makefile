@@ -17,6 +17,7 @@ OBJS = $(addprefix o/,\
 	   gdt.o lib.o panic.o serial.o\
 	   pmem.o vmem.o kmalloc.o\
 	   idt.o shell.o keyboard.o\
+	   syscalls.o\
 	   kmain.o\
 	   )
 

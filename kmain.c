@@ -44,4 +44,8 @@ void kcommon(int magic, struct multiboot_info *info)
 void kmain()
 {
 	init_shell();
+	// to test fake syscalls:
+	//emit_signal(SYSCALL, (void *)1);
+	//emit_signal(SYSCALL, (void *)0);
+	//emit_signal(SYSCALL, (void *)23);
 }

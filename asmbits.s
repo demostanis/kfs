@@ -29,6 +29,10 @@ export enable_paging:
 	mov cr0, eax
 	ret
 
+export faulty_address:
+	mov eax, cr2
+	ret
+
 %macro isr 1
 export isr_wrapper_%1:
 	extern interrupt_handler_%1
@@ -61,6 +65,7 @@ isr 13 ; general protection fault
 
 ; software interrupts
 isr 28 ; line received
+isr 0x80 ; syscall received
 
 export load_idt:
 	extern idtp ; idt.c
@@ -69,16 +74,24 @@ export load_idt:
 	sti
 	ret
 
-export faulty_address:
-	mov eax, cr2
-	ret
+; idt.h
+%define LINE 28
+%define SYSCALL 0x80
 
-%define LINE 28 ; idt.h
 export emit_signal:
 	cmp eax, LINE
-	jne .end
-	push ebx ; TODO: push more registers
+	je .line_received
+	cmp eax, SYSCALL
+	je .syscall
+.line_received:
+	push ebx
 	int 28
 	pop ebx
+	jmp .end
+.syscall:
+	push ebx ; TODO: push more registers
+	int 0x80
+	pop ebx
+	jmp .end
 .end:
 	ret
