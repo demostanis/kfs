@@ -164,6 +164,21 @@ int __printfmt(char *f, va_list *lst)
 	return inc;
 }
 
+void print_addr(unsigned char *addr, int lines)
+{
+	while (lines-- > 0)
+	{
+		printk("%8x: %2x %2x %2x %2x |%4B|", addr,
+				((unsigned char *)addr)[3],
+				((unsigned char *)addr)[2],
+				((unsigned char *)addr)[1],
+				((unsigned char *)addr)[0],
+				addr
+				);
+		addr += 4;
+	}
+}
+
 void printk(const char *s, ...)
 {
 	va_list lst;

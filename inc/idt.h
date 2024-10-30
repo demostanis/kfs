@@ -10,6 +10,17 @@
 // send EOI to PIC
 #define ACK() outb(0x20, 0x20);
 
+#define handle_interrupt(i) __handle_interrupt(i)
+#define __handle_interrupt(i) \
+	void isr_wrapper_##i(); \
+	idt_set_descriptor(i, isr_wrapper_##i);
+
+#define KEYBOARD_IV 9
+#define PAGE_FAULT_IV 14
+#define GPF_IV 13
+
+#define LINE 28 /* line received interrupt */
+
 struct idt_entry
 {
 	u16 addr_low pack;
@@ -28,4 +39,6 @@ struct idt_ptr
 // asmbits.s
 void load_idt();
 
+void idt_set_descriptor(int n, void *fptr);
 void idt_install();
+void emit_signal(int iv, void *data);

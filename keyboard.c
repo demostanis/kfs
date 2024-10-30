@@ -16,7 +16,6 @@ char keymap[] = {
 
 char *buf;
 usize bufi;
-int has_line;
 int ignore_next;
 
 void interrupt_handler_9()
@@ -52,9 +51,11 @@ void interrupt_handler_9()
 
 			if (key == '\n')
 			{
-				buf[bufi] = 0;
-				has_line = 1;
 				putchar(key);
+				buf[bufi] = 0;
+				emit_signal(LINE, buf);
+				buf = 0;
+				bufi = 0;
 				goto end;
 			}
 			else if (key == '\b')
@@ -74,15 +75,4 @@ void interrupt_handler_9()
 
 end:
 	ACK();
-}
-
-char *get_line()
-{
-	while (!has_line)
-		__asm__ volatile("hlt");
-	char *line = buf;
-	buf = 0;
-	bufi = 0;
-	has_line = 0;
-	return line;
 }

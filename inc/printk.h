@@ -13,4 +13,6 @@ void putcharpr(char c);
 void putbytespr(unsigned char *s, int size);
 void putbin(unsigned int n, int size);
 
+void print_addr(unsigned char *addr, int lines);
+
 void printk(const char *s, ...);

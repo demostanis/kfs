@@ -42,18 +42,25 @@ export isr_wrapper_%1:
 	; by pushad) + 1)
 	push dword [esp + 36]
 	push ebp
-	mov ebp, esp
+
+	mov ebp, esp ; save stack
+
+	push dword [esp + 64] ; emit_signal() argument
 
 	call interrupt_handler_%1
 
-	add esp, 8
+	add esp, 12 ; remove from the stack everything we pushed after `pushad`
 	popad
 	iret
 %endmacro
 
+; hardware interrupts
 isr 9 ; keyboard
 isr 14 ; page fault
 isr 13 ; general protection fault
+
+; software interrupts
+isr 28 ; line received
 
 export load_idt:
 	extern idtp ; idt.c
@@ -64,4 +71,14 @@ export load_idt:
 
 export faulty_address:
 	mov eax, cr2
+	ret
+
+%define LINE 28 ; idt.h
+export emit_signal:
+	cmp eax, LINE
+	jne .end
+	push ebx ; TODO: push more registers
+	int 28
+	pop ebx
+.end:
 	ret
