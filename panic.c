@@ -10,6 +10,11 @@ void interrupt_handler_14() // page faults handler
 	panic("page fault, unmapped address %p", faulty_address());
 }
 
+void interrupt_handler_13() // general protection fault handler
+{
+	panic("general protection fault");
+}
+
 struct frame
 {
 	struct frame *ebp;

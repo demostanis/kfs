@@ -20,6 +20,7 @@ void idt_set_descriptor(int n, void *fptr)
 
 #define KEYBOARD_IV 9
 #define PAGE_FAULT_IV 14
+#define GPF_IV 13
 
 void idt_install()
 {
@@ -28,9 +29,10 @@ void idt_install()
 
 	handle_interrupt(KEYBOARD_IV);
 	handle_interrupt(PAGE_FAULT_IV);
+	handle_interrupt(GPF_IV);
 
-	outb(PIC1_DATA, 0xfd);
-	outb(PIC2_DATA, 0xff);
+	outb(PIC1_DATA, 0b11111101); // unmask keyboard (int 1)
+	outb(PIC2_DATA, 0b11111111);
 
 	load_idt();
 }

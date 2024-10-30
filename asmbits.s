@@ -53,6 +53,7 @@ export isr_wrapper_%1:
 
 isr 9 ; keyboard
 isr 14 ; page fault
+isr 13 ; general protection fault
 
 export load_idt:
 	extern idtp ; idt.c

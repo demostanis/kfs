@@ -48,6 +48,10 @@ void kcommon(int magic, struct multiboot_info *info)
 	clear_video();
 	disable_cursor();
 
+	// causes a GPF since there's no ISR for interrupt 69:
+	// (for testing)
+	//__asm__ volatile("int $0x69");
+
 	// TODO: why does it say page already mapped?
 	unmap_page((addr)reloc(mboot_info));
 	map_phys_to_virt((addr)mboot_info, (addr)reloc(mboot_info));
